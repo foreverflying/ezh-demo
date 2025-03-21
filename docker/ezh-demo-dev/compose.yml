@@ -1,0 +1,40 @@
+version: "3"
+services:
+  ezh-demo:
+    image: dev-node:23.6.0
+    build:
+      cache_from:
+        - dev-node:23.6.0
+      context: ../dev-node
+      args:
+        - NODE_VERSION=23.6.0
+    hostname: ezh-demo
+    environment:
+      - TZ=${TIME_ZONE:-Pacific/Auckland}
+    volumes:
+      - type: bind
+        source: ${GIT_CONFIG_PATH:-~/.gitconfig}
+        target: /home/node/.gitconfig
+        read_only: true
+      - type: bind
+        source: ${SSH_PATH:-~/.ssh}
+        target: /home/node/.ssh
+        read_only: true
+      - type: bind
+        source: ${BASH_ALIASES_PATH:-../res/.bash_aliases}
+        target: /home/node/.bash_aliases
+        read_only: true
+      - type: bind
+        source: ${BASH_ALIASES_PATH:-../res/.bash_aliases}
+        target: /root/.bash_aliases
+        read_only: true
+      - home:/home/node
+      - ../..:/opt/workspace/ezh-demo
+    # ports:
+    #   - 9000:9000
+volumes:
+  #   data:
+  #     driver_opts:
+  #       type: tmpfs
+  #       device: tmpfs
+  home:

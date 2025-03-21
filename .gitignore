@@ -1,0 +1,15 @@
+.DS_Store
+
+node_modules
+.initiated
+.VSCodeCounter
+
+/build
+/dist
+/out
+/min
+/lib
+
+src/ezh
+src/ezh-model
+src/justrun-ws

@@ -47,7 +47,7 @@ export const createModelLoader = <PkgTypeT extends number | string>(
     client.handleMessageWith(RevokeMessage, (message: RevokeMsg) => {
         loader.invalidate(message.key)
     })
-    client.onConnectionStatus((isOpen: boolean, _active: boolean, _err?: Error) => {
+    client.onConnectionStatus((isOpen: boolean) => {
         if (!isOpen) {
             loader.invalidateAll()
         }

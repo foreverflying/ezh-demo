@@ -59,5 +59,9 @@
   },
   "VSCodeCounter.include": [
     "src/**/*"
-  ]
+  ],
+  "launch": {
+    "configurations": [],
+    "compounds": []
+  }
 }

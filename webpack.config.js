@@ -94,7 +94,8 @@ module.exports = {
         historyApiFallback: true,
         allowedHosts: 'all',
         devMiddleware: {
-            writeToDisk: true,
+            // writeToDisk: true,
+            writeToDisk: false,
         },
         static: {
             directory: path.join(__dirname, static),

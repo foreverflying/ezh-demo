@@ -11,7 +11,3 @@ node_modules
 /out
 /min
 /lib
-
-src/ezh
-src/ezh-model
-src/justrun-ws

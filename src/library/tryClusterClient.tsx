@@ -1,6 +1,6 @@
 import { $ezh, Com } from 'ezh'
 import { KeyObj, loading, Model, ModelCtor } from 'ezh-model'
-import { CommonError, createNumPkgTypeClient } from 'justrun-ws'
+import { CommonError, createNumPkgTypeClient, JustrunAuthProvider } from 'justrun-ws'
 import { User } from './model/User'
 import { BorrowBooksRequest } from './package/BorrowBooks'
 import { FillBooksRequest } from './package/FillBooks'
@@ -10,9 +10,18 @@ import { ReturnBooksRequest } from './package/ReturnBooks'
 import { createModelLoader } from './createModelLoader'
 
 const userId = 'user_1'
-const connStr = 'ws://127.0.0.1:8088/api'
-const client = createNumPkgTypeClient(() => connStr)
-client.enableAuthenticate(0xff00, () => undefined, true)
+const client = createNumPkgTypeClient('')
+const host = location.host
+const provider = new JustrunAuthProvider(
+    false,
+    `https://${host}/api/auth`,
+    (address, sid) => `wss://${host}/api/ws?sid=${sid}&addr=${address}`,
+    (userId, sid) => {
+        console.log('auth success', userId, sid)
+    },
+)
+
+client.enableAuthenticate(0x3fff, provider)
 client.registerError(0x03, CommonError)
 
 client.registerRequest(0x05, QueryUserRequest)

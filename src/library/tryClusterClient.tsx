@@ -13,11 +13,10 @@ const userId = 'user_1'
 const client = createNumPkgTypeClient('')
 const host = location.host
 const provider = new JustrunAuthProvider(
-    false,
     `https://${host}/api/auth`,
     (address, sid) => `wss://${host}/api/ws?sid=${sid}&addr=${address}`,
-    (userId, sid) => {
-        console.log('auth success', userId, sid)
+    (userId, sid, connErr) => {
+        console.log(connErr ? 'auth failed: ' + connErr : 'auth succeeded', userId, sid)
     },
 )
 

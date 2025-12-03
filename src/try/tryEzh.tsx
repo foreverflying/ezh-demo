@@ -1,7 +1,7 @@
 import 'ezh/debug-check'
 import { $ezh, Com, EzElement, Link, Router, bindData, configGC, route, useState } from 'ezh'
 
-configGC(12, 50000)
+configGC(10, 1000)
 
 const Test: Com<{ text: string, counter?: { count: number } }> = ({ text, counter }) => {
     return <p>{`${text}${counter ? ' - Counter is ' + counter.count : ''}`}</p>
@@ -53,38 +53,41 @@ interface LevelObj {
     level: number
 }
 
-type Test4State = {
-    record: { count: number }[]
-}
-
 const Test4: Com<{ levelObj: LevelObj }> = ({ levelObj }) => {
-    const state = useState<Test4State>((current) => {
-        if (!current) {
-            return {
-                record: [
+    const state = useState(
+        {
+            record: [
+                {
+                    count: levelObj.level,
+                },
+            ],
+        },
+        (ver, state) => {
+            if (ver > 1) {
+                const record = state.record
+                const last = record[record.length - 1]
+
+                record.push({
+                    count: last.count + 1 + 100 * levelObj.level,
+                })
+                if (record.length > 10) {
+                    record.splice(record.length - 10, 2, { count: -1 }, { count: -2 })
+                }
+                // const result = record.concat({
+                //     count: last.count + 1 + 100 * levelObj.level
+                // })
+                // state.record = result
+                return
+            }
+            if (ver) {
+                state.record = [
                     {
                         count: levelObj.level,
                     },
-                ],
+                ]
             }
-        }
-        const record = current.record
-        const last = record[record.length - 1]
-
-        record.push({
-            count: last.count + 1 + 100 * levelObj.level,
-        })
-        if (record.length > 10) {
-            record.splice(record.length - 10, 2, { count: -1 }, { count: -2 })
-        }
-        return current
-        // const result = record.concat({
-        //     count: last.count + 1 + 100 * levelObj.level
-        // })
-        // return {
-        //     record: result
-        // }
-    }, true)
+        },
+    )
 
     const record = state.record
 
@@ -104,18 +107,9 @@ const Test4: Com<{ levelObj: LevelObj }> = ({ levelObj }) => {
     </>
 }
 
-type MyState = {
-    name: string
-    level: number
-    text: string
-    isSelected: boolean
-    counter: {
-        count: number
-    }
-}
 
 const Test5: Com<{ text: string, some?: string }> = ({ text }) => {
-    const state = useState<MyState>({
+    const state = useState({
         name: 'Andy',
         level: 0,
         text: 'Hello world',

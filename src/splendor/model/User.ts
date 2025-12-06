@@ -1,4 +1,4 @@
-import { Model, decKey, KeyObj, decField } from 'ezh-model'
+import { Model, decKey, KeyObj, decField } from '../defModel'
 
 export class User extends Model<User> {
     static override keyObjToKey(key: KeyObj<User>): string {
@@ -9,7 +9,10 @@ export class User extends Model<User> {
     declare readonly userId: string
 
     @decField
-    declare gameId: string
+    declare name: string
+
+    @decField
+    declare gameId?: string
 
     @decField
     declare playerId?: string

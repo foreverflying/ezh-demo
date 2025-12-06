@@ -1,4 +1,4 @@
-import { JsonRequest } from 'justrun-ws'
+import { JsonRequest } from '../defPackage'
 
 export type VisitGameReq = {
     userId: string

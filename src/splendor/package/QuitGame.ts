@@ -1,8 +1,8 @@
-import { DoneResp, JsonRequest } from 'justrun-ws'
+import { DoneResp, JsonRequest } from '../defPackage'
 
 export type QuitGameReq = {
-    userId: string
     gameId: string
+    userId: string
 }
 
 export class QuitGameRequest extends JsonRequest<QuitGameReq, DoneResp> { }

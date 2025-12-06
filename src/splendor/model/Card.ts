@@ -1,4 +1,4 @@
-import { Model, decKey, KeyObj, decField } from 'ezh-model'
+import { Model, decKey, KeyObj, decField } from '../defModel'
 import { GemType } from './common'
 
 export class Card extends Model<Card> {

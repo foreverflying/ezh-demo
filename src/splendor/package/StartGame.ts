@@ -1,4 +1,4 @@
-import { DoneResp, JsonRequest } from 'justrun-ws'
+import { DoneResp, JsonRequest } from '../defPackage'
 
 export type StartGameReq = {
     userId: string

@@ -1,4 +1,4 @@
-import { DoneResp, JsonRequest } from 'justrun-ws'
+import { DoneResp, JsonRequest } from '../defPackage'
 
 export type ReserveCardReq = {
     userId: string

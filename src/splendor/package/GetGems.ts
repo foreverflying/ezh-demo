@@ -1,7 +1,8 @@
-import { DoneResp, JsonRequest } from 'justrun-ws'
+import { DoneResp, JsonRequest } from '../defPackage'
 
 export type GetGemsReq = {
-    cid: string
+    userId: string
+    gameId: string
     gems: number[]
 }
 

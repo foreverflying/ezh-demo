@@ -1,4 +1,4 @@
-import { Model, decKey, KeyObj, decField, decArray } from 'ezh-model'
+import { Model, decKey, KeyObj, decField, decArray } from '../defModel'
 
 export class Player extends Model<Player> {
     static override keyObjToKey(key: KeyObj<Player>): string {

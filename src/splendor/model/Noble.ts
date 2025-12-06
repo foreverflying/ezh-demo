@@ -1,4 +1,4 @@
-import { Model, decKey, KeyObj, decField } from 'ezh-model'
+import { Model, decKey, KeyObj, decField } from '../defModel'
 
 export class Noble extends Model<Noble> {
     static override keyObjToKey(key: KeyObj<Noble>): string {

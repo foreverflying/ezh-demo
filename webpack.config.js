@@ -28,8 +28,11 @@ let static = 'static/benchmark'
 // entry = 'try/tryEzhModel.tsx'
 // static = 'static/tryEzh'
 
-entry = 'library/tryClusterClient.tsx'
-static = 'static/library'
+// entry = 'library/tryClusterClient.tsx'
+// static = 'static/library'
+
+entry = 'splendor/index.tsx'
+static = 'static/splendor'
 
 module.exports = {
     entry: `./src/${entry}`,

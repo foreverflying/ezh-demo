@@ -1,6 +1,6 @@
 import { decField, KeyObj, Model, ModelCtor, Struct } from 'ezh-model'
 import { CommonError, createNumPkgTypeClient, JustrunAuthProvider, MessageWrapper, RequestWrapper, TimeoutMonitor } from 'justrun-ws'
-import { createModelLoader } from './createModelLoader'
+import { createModelLoader } from 'justrun-loader'
 import { CreateGameRequest } from './package/CreateGame'
 import { VisitGameRequest } from './package/VisitGame'
 import { LeaveGameRequest } from './package/LeaveGame'

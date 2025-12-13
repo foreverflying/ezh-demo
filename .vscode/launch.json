@@ -44,6 +44,6 @@
         "**/logClass.js",
         "**/logClass.mjs",
       ],
-    }
+    },
   ]
 }

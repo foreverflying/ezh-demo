@@ -1,0 +1,130 @@
+.play {
+    padding: 20px;
+
+    .cards {
+        margin-bottom: 30px;
+
+        .card-group {
+            margin-bottom: 20px;
+
+            .card-group-title {
+                font-size: 1.2em;
+                font-weight: 600;
+                margin-bottom: 10px;
+            }
+
+            .card-list {
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+        }
+    }
+
+    .card {
+        width: 120px;
+        height: 160px;
+        border: 2px solid #333;
+        border-radius: 8px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background-color: #fff;
+
+        .card-cost {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .card-score {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+            color: #3b82f6;
+        }
+
+        .card-deduct {
+            font-size: 0.9em;
+            text-align: center;
+            font-weight: 500;
+        }
+    }
+
+    .gems {
+        margin-bottom: 30px;
+
+        .gems-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .gems-list {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .gem {
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px;
+
+            .gem-name {
+                font-weight: 500;
+                margin-bottom: 5px;
+            }
+
+            .gem-count {
+                font-size: 1.5em;
+                font-weight: bold;
+            }
+        }
+    }
+
+    .nobles {
+        margin-bottom: 30px;
+
+        .nobles-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .nobles-list {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .noble {
+            width: 150px;
+            padding: 15px;
+            border: 2px solid #8b5cf6;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #faf5ff;
+
+            .noble-score {
+                font-size: 1.8em;
+                font-weight: bold;
+                color: #8b5cf6;
+                margin-bottom: 10px;
+            }
+
+            .noble-criteria {
+                font-size: 0.9em;
+                color: #666;
+                text-align: center;
+            }
+        }
+    }
+}
+

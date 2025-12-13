@@ -88,7 +88,6 @@ const Test4: Com<{ levelObj: LevelObj }> = ({ levelObj }) => {
             }
         },
     )
-
     const record = state.record
 
     // should fail the debugCheck:
@@ -99,7 +98,7 @@ const Test4: Com<{ levelObj: LevelObj }> = ({ levelObj }) => {
     const display = record.map(item => item.count).join(', ')
     return <>
         <div className='hello'>
-            <p>Count record: {display}</p>
+            <p>Test 4 - Count record: {display}</p>
             <Test1 text='Test3' counter={last} />
             <p>.</p>
             <Test3 record={record} />

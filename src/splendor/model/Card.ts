@@ -1,23 +1,28 @@
-import { Model, decKey, KeyObj, decField } from '../defModel'
-import { GemType } from './common'
+import { Model, decKey, KeyObj, decField, decArray } from '../defModel'
+import { CardCategory, GemType } from './common'
 
 export class Card extends Model<Card> {
+    static override readonly source = 'config'
+
     static override keyObjToKey(key: KeyObj<Card>): string {
-        return `${this.name}|${key.cardId}`
+        return `${this.name}|${key.id}`
     }
 
     @decKey
-    declare readonly cardId: string
+    declare readonly id: string
 
     @decField
-    declare category: number
+    declare category: CardCategory
 
-    @decField
+    @decArray
     declare cost: number[]
 
     @decField
     declare score: number
 
     @decField
-    declare deduct: number
+    declare deduct: GemType
+
+    @decField
+    declare extraDeduct?: GemType
 }

@@ -71,10 +71,51 @@
       ],
       "filenames": [],
       "extensions": [
-        "ts"
+        "ts",
+        "tsx"
       ],
       "lineComments": []
-    }
+    },
+    "javascriptreact": {
+      "aliases": [],
+      "filenames": [],
+      "extensions": [
+        ".jsx"
+      ],
+      "lineComments": [],
+      "blockComments": [
+        [
+          "{/*",
+          "*/}"
+        ]
+      ],
+      "blockStrings": [
+        [
+          "`",
+          "`"
+        ]
+      ]
+    },
+    "typescriptreact": {
+      "aliases": [],
+      "filenames": [],
+      "extensions": [
+        ".tsx"
+      ],
+      "lineComments": [],
+      "blockComments": [
+        [
+          "{/*",
+          "*/}"
+        ]
+      ],
+      "blockStrings": [
+        [
+          "`",
+          "`"
+        ]
+      ]
+    },
   },
   "VSCodeCounter.include": [
     "src/**/*"

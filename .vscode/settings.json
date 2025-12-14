@@ -10,17 +10,9 @@
   "files.insertFinalNewline": true,
   "files.exclude": {
     "**/.DS_Store": true,
-    "**/.git/**": true,
-    "**/build/**": true,
-    "**/dist/**": true,
-    "**/lib/**": true,
-    "**/min/**": true,
-    "**/out/**": true,
-    "**/node_modules/**": true,
   },
   "search.exclude": {
     "**/.DS_Store": true,
-    "**/.git/**": true,
     "**/build/**": true,
     "**/dist/**": true,
     "**/lib/**": true,
@@ -30,7 +22,6 @@
   },
   "files.watcherExclude": {
     "**/.DS_Store": true,
-    "**/.git/**": true,
     "**/build/**": true,
     "**/dist/**": true,
     "**/lib/**": true,

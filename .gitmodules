@@ -1,12 +1,3 @@
 [submodule "docker/dev-node"]
 	path = docker/dev-node
 	url = git@github.com:foreverflying/dev-node.git
-[submodule "src/ezh/ezh"]
-	path = src/ezh/ezh
-	url = git@github.com:foreverflying/ezh.git
-[submodule "src/ezh-model/ezh-model"]
-	path = src/ezh-model/ezh-model
-	url = git@github.com:foreverflying/ezh-model.git
-[submodule "src/justrun-ws/justrun-ws"]
-	path = src/justrun-ws/justrun-ws
-	url = git@github.com:foreverflying/justrun-ws.git

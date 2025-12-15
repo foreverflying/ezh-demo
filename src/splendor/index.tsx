@@ -1,8 +1,8 @@
 import 'ezh/debug-check'
 import { $ezh, Com, route, Router } from 'ezh'
-import { ConnErrorView } from './components/ConnErrorView'
-import { MainView } from './components/Main'
-import { GameView } from './components/Game'
+import { ConnErrorView } from './coms/ConnErrorView'
+import { MainView } from './coms/MainView'
+import { GameView } from './coms/GameView'
 import { client } from './client'
 
 const routeMap = {
@@ -29,3 +29,9 @@ const rootElement = document.getElementById('root')
 if (rootElement) {
     $ezh.render(rootElement, Root)
 }
+
+// Added comment
+
+// Added comment
+
+// Added comment

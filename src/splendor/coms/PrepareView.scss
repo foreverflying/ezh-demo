@@ -1,0 +1,212 @@
+@use "sass:color";
+$bg-top: #0f172a;
+$bg-bottom: #0b1220;
+$card-bg: rgba(255, 255, 255, 0.96);
+$primary: #1976d2;
+$success: #43a047;
+$muted: #6b7280;
+$danger: #e53e3e;
+$max-width: 960px;
+
+.prepare {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 36px 18px;
+    box-sizing: border-box;
+    background: linear-gradient(180deg, $bg-top 0%, $bg-bottom 100%);
+    color: #0b1220;
+
+    .header {
+        display: flex;
+        width: 100%;
+        max-width: $max-width;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+
+        .header-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0;
+        }
+    }
+
+    /* Card-like sections */
+    .code,
+    .players {
+        width: 100%;
+        max-width: 360px;
+        background: $card-bg;
+        border-radius: 12px;
+        padding: 14px 16px;
+        box-shadow: 0 8px 30px rgba(2, 6, 23, 0.45);
+        border: 1px solid rgba(12, 17, 25, 0.06);
+        box-sizing: border-box;
+    }
+
+    .code {
+        margin-bottom: 8px;
+
+        .code-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .code-value {
+            font-size: 2.6rem;
+            line-height: 1;
+            font-weight: 800;
+            color: $primary;
+            padding: 10px 18px;
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            min-width: 160px;
+            text-align: center;
+            box-shadow: 0 6px 18px rgba(2, 6, 23, 0.18);
+            letter-spacing: 2px;
+        }
+
+        .code-leave-btn {
+            background: linear-gradient(90deg, #ef4444, color.adjust(#ef4444, $lightness: -6%));
+            color: #fff;
+            border-radius: 8px;
+            padding: 6px 10px;
+            border: none;
+            cursor: pointer;
+            flex: 0 0 auto;
+            margin-left: 12px;
+        }
+
+        .code-hint {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: $muted;
+            text-align: center;
+        }
+    }
+
+    /* Ensure join controls keep same appearance even when moved into players-bottom */
+    .players {
+        margin-bottom: 0;
+        display: flex;
+        flex-direction: column;
+        height: 450px;
+
+        .players-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .players-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1 1 auto;
+            min-height: 0;
+            /* allow flex child to scroll */
+            overflow-y: auto;
+            padding-right: 6px;
+            /* avoid content under scrollbar */
+        }
+
+        .players-bottom {
+            margin-top: 12px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            flex: 0 0 auto;
+        }
+
+        /* keep join-row full-width when placed here so visuals remain unchanged */
+        .players-bottom .join-row {
+            width: 100%;
+        }
+
+        .join-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .join-input {
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            min-width: 140px;
+            flex: 0 0 auto;
+            box-sizing: border-box;
+        }
+
+        .join-btn {
+            padding: 10px 12px;
+            width: 160px;
+            border-radius: 10px;
+            background: linear-gradient(90deg, $primary, color.adjust($primary, $lightness: -6%));
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .join-error {
+            margin-top: 8px;
+            color: $danger;
+            text-align: center;
+        }
+
+        .start-btn,
+        .quit-btn {
+            padding: 10px 12px;
+            width: 160px;
+            border-radius: 10px;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .start-btn {
+            background: linear-gradient(90deg, $success, color.adjust($success, $lightness: -6%));
+        }
+
+        .start-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .quit-btn {
+            background: linear-gradient(90deg, #ef4444, color.adjust(#ef4444, $lightness: -6%));
+        }
+    }
+
+    .player {
+        padding: 10px 12px;
+        min-height: 48px;
+        border-radius: 8px;
+        border: 1px solid rgba(12, 17, 25, 0.06);
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .player-name {
+            font-weight: 600;
+        }
+
+        .player-tag {
+            margin-left: 8px;
+            color: $muted;
+            font-size: 0.9rem;
+        }
+    }
+}

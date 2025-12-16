@@ -8,7 +8,7 @@ import { JoinGameRequest } from './packages/JoinGame'
 import { QuitGameRequest } from './packages/QuitGame'
 import { StartGameRequest } from './packages/StartGame'
 import { BuyCardRequest } from './packages/BuyCard'
-import { GetGemsRequest } from './packages/GetGems'
+import { TakeGemsRequest } from './packages/TakeGems'
 import { ReserveCardRequest } from './packages/ReserveCard'
 
 class AuthState extends Struct<AuthState> {
@@ -49,7 +49,7 @@ wsClient.registerRequest(0x08, JoinGameRequest)
 wsClient.registerRequest(0x09, QuitGameRequest)
 wsClient.registerRequest(0x0a, StartGameRequest)
 wsClient.registerRequest(0x10, BuyCardRequest)
-wsClient.registerRequest(0x11, GetGemsRequest)
+wsClient.registerRequest(0x11, TakeGemsRequest)
 wsClient.registerRequest(0x12, ReserveCardRequest)
 
 const sendRequest = async <RequestT, ResponseT>(
@@ -99,7 +99,7 @@ export const client = {
         }))
         return resp
     },
-    async visitGame(gameCode: number) {
+    async visitGame(gameCode: string) {
         const resp = await wsClient.sendRequest(new VisitGameRequest({
             userId: authState.cid,
             gameCode,
@@ -132,6 +132,23 @@ export const client = {
         const resp = await wsClient.sendRequest(new StartGameRequest({
             userId: authState.cid,
             gameId,
+        }))
+        return resp
+    },
+    async takeGems(gameId: string, gems: number[]) {
+        const resp = await wsClient.sendRequest(new TakeGemsRequest({
+            userId: authState.cid,
+            gameId,
+            gems,
+        }))
+        return resp
+    },
+    async buyCard(gameId: string, cardId: string, gems: number[]) {
+        const resp = await wsClient.sendRequest(new BuyCardRequest({
+            userId: authState.cid,
+            gameId,
+            cardId,
+            gems,
         }))
         return resp
     },

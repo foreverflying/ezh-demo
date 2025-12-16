@@ -21,8 +21,8 @@ export class Card extends Model<Card> {
     declare score: number
 
     @decField
-    declare deduct: GemType
+    declare bonus: GemType
 
     @decField
-    declare extraDeduct?: GemType
+    declare extraBonus?: GemType
 }

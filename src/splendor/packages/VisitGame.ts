@@ -2,7 +2,7 @@ import { JsonRequest } from '../defPackage'
 
 export type VisitGameReq = {
     userId: string
-    gameCode: number
+    gameCode: string
 }
 
 export type VisitGameResp = {

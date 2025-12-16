@@ -86,8 +86,7 @@ export const PrepareView: Com<{ game: Game, gameInfo: GameInfo, user: User }> = 
         <div className='players'>
             <h2 className='players-title'>Players ({game.playerCount} required to Start)</h2>
             <div className='players-list'>
-                {game.players.map((id) => {
-                    const playerId = `${game.gameId}#${id}`
+                {game.players.map((playerId) => {
                     return <PlayerItem key={playerId} user={user} playerId={playerId} />
                 })}
             </div>
@@ -115,6 +114,7 @@ export const PrepareView: Com<{ game: Game, gameInfo: GameInfo, user: User }> = 
                         <input
                             className='join-input'
                             type="text"
+                            placeholder="Player Name"
                             value={state.playerName}
                             onfocus={() => {
                                 state.error = ''
@@ -123,7 +123,6 @@ export const PrepareView: Com<{ game: Game, gameInfo: GameInfo, user: User }> = 
                                 const target = e.target as HTMLInputElement
                                 state.playerName = target.value
                             }}
-                            placeholder="Player Name"
                         />
                         <button
                             className='join-btn'

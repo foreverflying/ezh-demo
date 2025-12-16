@@ -1,9 +1,9 @@
 import { DoneResp, JsonRequest } from '../defPackage'
 
-export type GetGemsReq = {
+export type TakeGemsReq = {
     userId: string
     gameId: string
     gems: number[]
 }
 
-export class GetGemsRequest extends JsonRequest<GetGemsReq, DoneResp> { }
+export class TakeGemsRequest extends JsonRequest<TakeGemsReq, DoneResp> { }

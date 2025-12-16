@@ -5,12 +5,14 @@ import { Game, GameInfo } from '../models/Game'
 import { User } from '../models/User'
 import { PrepareView } from './PrepareView'
 import { PlayView } from './PlayView'
+import { Effect } from './Effect'
 
 export const GameView: Com<{ gameId: string }> = ({ gameId }) => {
     const { userId } = client
     if (!userId) {
-        client.SignUpAnonymously().catch(nopFunc)
-        return
+        return <Effect on={() => {
+            client.SignUpAnonymously().catch(nopFunc)
+        }} />
     }
     const user = client.loadModel(User, { userId })
     if (!user) {
@@ -24,20 +26,18 @@ export const GameView: Com<{ gameId: string }> = ({ gameId }) => {
     if (!game) {
         return
     }
-    useState({}, (ver) => {
-        if (ver === 1) {
-            if (!user.gameId) {
-                client.visitGame(game.gameCode).catch(nopFunc)
-            }
-        }
-    })
+    if (!user.gameId) {
+        return <Effect on={() => {
+            client.visitGame(game.gameCode).catch(nopFunc)
+        }} />
+    }
     const gameInfo = client.loadModel(GameInfo, { gameCode: game.gameCode })
     if (!gameInfo) {
         return
     }
-    if (!game.round) {
-        return <PrepareView game={game} gameInfo={gameInfo} user={user} />
-    } else {
-        return <PlayView game={game} user={user} />
-    }
+    return game.round ? (
+        <PlayView game={game} user={user} />
+    ) : (
+        <PrepareView game={game} gameInfo={gameInfo} user={user} />
+    )
 }

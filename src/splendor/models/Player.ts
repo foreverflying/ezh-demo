@@ -27,7 +27,7 @@ export class Player extends Model<Player> {
     declare gems: number[]
 
     @decArray
-    declare deducts: number[]
+    declare bonuses: number[]
 
     @decArray
     declare reserved: string[]

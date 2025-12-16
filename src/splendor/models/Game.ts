@@ -9,19 +9,16 @@ export class Game extends Model<Game> {
     declare readonly gameId: string
 
     @decField
-    declare gameCode: number
+    declare gameCode: string
 
     @decField
     declare round: number
 
     @decField
-    declare first: number
-
-    @decField
     declare current: number
 
     @decArray
-    declare players: number[]
+    declare players: string[]
 
     @decField
     declare playerCount: number
@@ -42,7 +39,7 @@ export class GameInfo extends Model<GameInfo> {
     }
 
     @decKey
-    declare readonly gameCode: number
+    declare readonly gameCode: string
 
     @decField
     declare gameId: string

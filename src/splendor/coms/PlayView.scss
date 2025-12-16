@@ -1,34 +1,58 @@
+@use "sass:color";
+$bg-top: #0f172a;
+$bg-bottom: #0b1220;
+$primary: #1976d2;
+$accent: #daa520;
+$muted: #6b7280;
+$bg-panel: rgba(255, 255, 255, 0.96);
+$max-width: 960px;
+
+.page {
+    background: linear-gradient(180deg, $bg-top 0%, $bg-bottom 100%);
+}
+
 .play {
-    padding: 20px;
+    min-height: 100vh;
+    padding: 12px;
+    box-sizing: border-box;
+    vertical-align: middle;
+    width: fit-content;
+    margin: 0 auto;
 
-    .cards {
-        margin-bottom: 30px;
+    .top-panel {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        border: none;
+        background: transparent;
 
-        .card-group {
-            margin-bottom: 20px;
-
-            .card-group-title {
-                font-size: 1.2em;
-                font-weight: 600;
-                margin-bottom: 10px;
-            }
-
-            .card-list {
-                display: flex;
-                gap: 8px;
-                flex-wrap: wrap;
-                max-width: 688px;
-            }
+        .right-section {
+            justify-content: flex-end;
+            width: auto;
+            margin-left: 16px;
         }
+    }
+
+}
+
+.cards {
+    width: fit-content;
+
+    .card-row {
+        margin-top: 8px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: nowrap;
+        max-width: 688px;
     }
 
     .card {
         /* layout cards as a horizontal row so score and costs can sit side-by-side */
         width: 130px;
-        height: 180px;
-        border: 2px solid #333;
+        height: 162px;
+        border: 3px solid transparent;
         border-radius: 6px;
-        padding: 6px;
+        padding: 4px;
         box-sizing: border-box;
         display: flex;
         flex-direction: row;
@@ -37,27 +61,27 @@
         flex-wrap: nowrap;
         overflow: hidden;
 
-        &.card-deduct-Black {
+        &.bonus-Black {
             background-color: #6B6B6B;
         }
 
-        &.card-deduct-White {
+        &.bonus-White {
             background-color: #DDDDDD;
         }
 
-        &.card-deduct-Red {
+        &.bonus-Red {
             background-color: #E37A7A;
         }
 
-        &.card-deduct-Blue {
+        &.bonus-Blue {
             background-color: #6F83FF;
         }
 
-        &.card-deduct-Green {
+        &.bonus-Green {
             background-color: #7FCC7F;
         }
 
-        .card-top {
+        .card-left {
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -73,10 +97,12 @@
         .card-score {
             font-size: 2.8em;
             font-weight: bold;
-            color: #DAA520;
+            color: $accent;
+            user-select: none;
+            cursor: default;
         }
 
-        .card-bottom {
+        .card-right {
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
@@ -85,7 +111,7 @@
             height: 100%;
             box-sizing: border-box;
             white-space: nowrap;
-            padding-bottom: 6px;
+            padding-bottom: 4px;
         }
 
         .card-costs {
@@ -104,10 +130,12 @@
             justify-content: center;
             font-weight: bold;
             color: #333;
-            font-size: 0.85em;
+            font-size: 1.2em;
             border: 2px solid;
             flex: 0 0 auto;
             white-space: nowrap;
+            user-select: none;
+            cursor: default;
 
             &.cost-gem-Black {
                 background-color: #000000;
@@ -139,175 +167,828 @@
             }
         }
     }
+}
 
-    .gems {
-        margin-bottom: 30px;
+.gems {
+    position: relative;
 
-        .gems-title {
-            font-size: 1.2em;
-            font-weight: 600;
-            margin-bottom: 10px;
+    .gem-row {
+        padding-top: 5px;
+        display: flex;
+        gap: 20px;
+        flex-wrap: nowrap;
+    }
+
+    .gem {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .gem-circle {
+        flex: 0 0 50px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.5em;
+        color: #fff;
+        border: 3px solid #CCCCCC;
+        box-sizing: border-box;
+        user-select: none;
+        cursor: default;
+    }
+
+    .gem-Gold {
+        background-color: #FFD700;
+        color: #000;
+
+        &.empty {
+            background-color: #fffdf0;
+            color: transparent;
+        }
+    }
+
+    .gem-Black {
+        background-color: #000000;
+        color: #fff;
+
+        &.empty {
+            background-color: #ebebeb;
+            color: transparent;
+        }
+    }
+
+    .gem-White {
+        background-color: #FFFFFF;
+        color: #333;
+
+        &.empty {
+            background-color: #fcfcfc;
+            color: transparent;
+        }
+    }
+
+    .gem-Red {
+        background-color: #FF0000;
+        color: #fff;
+
+        &.empty {
+            background-color: #fff1f0;
+            color: transparent;
+        }
+    }
+
+    .gem-Blue {
+        background-color: #0000FF;
+        color: #fff;
+
+        &.empty {
+            background-color: #f0f0ff;
+            color: transparent;
+        }
+    }
+
+    .gem-Green {
+        background-color: #00AA00;
+        color: #fff;
+
+        &.empty {
+            background-color: #f0f5f0;
+            color: transparent;
+        }
+    }
+}
+
+.nobles {
+    .noble-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: nowrap;
+    }
+
+    .noble {
+        width: 94px;
+        height: 94px;
+        padding: 10px;
+        border: 2px solid #8b5cf6;
+        border-radius: 8px;
+        display: block;
+        position: relative;
+        background-color: #faf5ff;
+        box-sizing: border-box;
+
+        .noble-score {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #8b5cf6;
+            user-select: none;
+            cursor: default;
         }
 
-        .gems-list {
+        .noble-criteria {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
             display: flex;
-            gap: 8px;
-            flex-wrap: nowrap;
-            max-width: 688px;
-            align-items: center;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 4px;
+            align-items: flex-end;
         }
 
-        .gem {
-            flex: 1 1 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .gem-circle {
-            flex: 0 0 64px;
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
+        .criteria-square {
+            width: 18px;
+            height: 22px;
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: 0.75em;
             color: #fff;
             border: 2px solid rgba(0, 0, 0, 0.12);
             box-sizing: border-box;
+            user-select: none;
+            cursor: default;
         }
 
-        .gem-circle-Gold {
-            background-color: #FFD700;
-            color: #000;
-            border-color: #FFD700
-        }
-
-        .gem-circle-Black {
+        .criteria-square-Black {
             background-color: #000000;
             color: #fff;
             border-color: #000000
         }
 
-        .gem-circle-White {
+        .criteria-square-White {
             background-color: #FFFFFF;
             color: #333;
             border-color: #CCCCCC
         }
 
-        .gem-circle-Red {
+        .criteria-square-Red {
             background-color: #FF0000;
             color: #fff;
             border-color: #FF0000
         }
 
-        .gem-circle-Blue {
+        .criteria-square-Blue {
             background-color: #0000FF;
             color: #fff;
             border-color: #0000FF
         }
 
-        .gem-circle-Green {
+        .criteria-square-Green {
             background-color: #00AA00;
             color: #fff;
             border-color: #00AA00
         }
     }
+}
 
-    .nobles {
-        margin-bottom: 30px;
+.game-info {
+    text-align: right;
+    gap: 4px;
+    margin: 2px 5px 5px auto;
 
-        .nobles-title {
-            font-size: 1.2em;
+    .leave-btn {
+        min-width: 112px;
+        background: linear-gradient(90deg, #ef4444, color.adjust(#ef4444, $lightness: -6%));
+        color: #fff;
+        border-radius: 8px;
+        padding: 6px 10px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .code-value {
+        margin-top: 5px;
+        font-size: 1.8rem;
+        line-height: 1;
+        font-weight: 800;
+        color: $primary;
+        text-align: right;
+        letter-spacing: 2px;
+    }
+
+    .round-label {
+        margin-top: 12px;
+        font-size: 1.2rem;
+        color: $muted;
+    }
+
+    .round-value {
+        font-size: 2.8rem;
+        font-weight: 600;
+        color: #cdcdcd
+    }
+}
+
+/* Players Section */
+.players {
+    box-shadow: 0 8px 30px rgba(2, 6, 23, 0.45);
+    width: fit-content;
+
+    .player-tabs {
+        margin-top: 8px;
+        display: flex;
+        gap: 0;
+
+        .player-tab {
+            flex: 0 0 120px;
+            text-align: center;
+            text-wrap: nowrap;
+            cursor: pointer;
+            border: none;
+            padding: 5px;
             font-weight: 600;
-            margin-bottom: 10px;
-        }
+            font-size: 1.2rem;
+            background: $bg-bottom;
+            color: $muted;
+            border-radius: 10px 10px 0 0;
+            transition: all 0.2s;
 
-        .nobles-list {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            /* force 3 items per row so nobles form two rows (if 6 items) */
-            width: calc(3 * 90px + 2 * 10px);
-            margin-left: auto;
-            justify-content: flex-end;
-            align-items: flex-start;
-        }
-
-        .noble {
-            width: 90px;
-            height: 90px;
-            padding: 8px;
-            border: 2px solid #8b5cf6;
-            border-radius: 8px;
-            display: block;
-            position: relative;
-            background-color: #faf5ff;
-
-            .noble-score {
-                position: absolute;
-                top: 6px;
-                left: 6px;
-                font-size: 2.0em;
-                font-weight: bold;
-                color: #8b5cf6;
+            &.active {
+                background: $bg-panel;
+                color: $primary;
             }
 
-            .noble-criteria {
-                position: absolute;
-                bottom: 6px;
-                right: 6px;
+            &.self {
+                color: $accent;
+            }
+
+            &:hover:not(.active):not(.self) {
+                color: $primary;
+            }
+        }
+    }
+
+    .player-detail {
+        padding: 15px 10px;
+        background: $bg-panel;
+        border-radius: 0 0 10px 10px;
+        display: flex;
+        gap: 24px;
+        align-items: flex-start;
+
+        .player-left {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+
+            .player-row {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+
+                .slot {
+                    margin: 0 4px;
+                    width: 24px;
+                    height: 32px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 6px;
+                    font-weight: 600;
+                    font-size: 0.85rem;
+                    background: #f0f0f0;
+                    border: 1px solid #ddd;
+                    box-sizing: border-box;
+                    user-select: none;
+                    cursor: default;
+
+                    .slot-empty {
+                        color: #999;
+                    }
+                }
+
+                .noble-slot {
+                    margin: 0;
+                    width: 32px;
+                    background: #faf5ff;
+                    border: 1px solid #d8b4fe;
+
+                    .noble-badge {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 2px;
+
+                        .noble-icon {
+                            font-size: 1.4rem;
+                            color: #8b5cf6;
+                        }
+
+                        .noble-score {
+                            font-size: 0.8rem;
+                            color: #8b5cf6;
+                            font-weight: 700;
+                        }
+                    }
+                }
+
+                .bonus {
+                    &.bonus-Black {
+                        background: #6B6B6B;
+                        color: #fff;
+
+                        &.empty {
+                            background: #ebebeb;
+                            color: transparent;
+                        }
+                    }
+
+                    &.bonus-White {
+                        background: #DDDDDD;
+                        color: #333;
+
+                        &.empty {
+                            background: #f7f7f7;
+                            color: transparent;
+                        }
+                    }
+
+                    &.bonus-Red {
+                        background: #E37A7A;
+                        color: #fff;
+
+                        &.empty {
+                            background: #fff1f0;
+                            color: transparent;
+                        }
+                    }
+
+                    &.bonus-Blue {
+                        background: #6F83FF;
+                        color: #fff;
+
+                        &.empty {
+                            background: #f0f0ff;
+                            color: transparent;
+                        }
+                    }
+
+                    &.bonus-Green {
+                        background: #7FCC7F;
+                        color: #fff;
+
+                        &.empty {
+                            background: #f0f5f0;
+                            color: transparent;
+                        }
+                    }
+                }
+
+                .gem-circle {
+                    flex: 0 0 28px;
+                    width: 28px;
+                    height: 28px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: 700;
+                    font-size: 0.75rem;
+                    color: #fff;
+                    border: 2px solid #999;
+                    user-select: none;
+                    cursor: default;
+
+                    &.gem-Gold {
+                        background: #FFD700;
+                        color: #000;
+                        border-color: #d4a000;
+
+                        &.empty {
+                            background: #fffdf0;
+                            color: transparent;
+                            border-color: #f0e6c0;
+                        }
+                    }
+
+                    &.gem-Black {
+                        background: #000000;
+                        border-color: #333;
+
+                        &.empty {
+                            background: #ebebeb;
+                            color: transparent;
+                            border-color: #d0d0d0;
+                        }
+                    }
+
+                    &.gem-White {
+                        background: #FFFFFF;
+                        color: #333;
+                        border-color: #ccc;
+
+                        &.empty {
+                            background: #fcfcfc;
+                            color: transparent;
+                            border-color: #e8e8e8;
+                        }
+                    }
+
+                    &.gem-Red {
+                        background: #FF0000;
+                        border-color: #cc0000;
+
+                        &.empty {
+                            background: #fff1f0;
+                            color: transparent;
+                            border-color: #ffc9c9;
+                        }
+                    }
+
+                    &.gem-Blue {
+                        background: #0000FF;
+                        border-color: #0000cc;
+
+                        &.empty {
+                            background: #f0f0ff;
+                            color: transparent;
+                            border-color: #c9c9ff;
+                        }
+                    }
+
+                    &.gem-Green {
+                        background: #00AA00;
+                        border-color: #008800;
+
+                        &.empty {
+                            background: #f0f5f0;
+                            color: transparent;
+                            border-color: #c9dcc9;
+                        }
+                    }
+                }
+
+                .row-empty {
+                    width: 100%;
+                    height: 12px;
+                }
+            }
+        }
+
+        .player-right {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-width: 180px;
+
+            .reserved-card {
+                display: flex;
+                gap: 8px;
+                align-items: flex-start;
+                padding: 8px;
+                background: #f9fafb;
+                border-radius: 6px;
+                border: 1px solid #e5e7eb;
+
+                .reserved-score {
+                    flex: 0 0 32px;
+                    font-size: 1.6rem;
+                    font-weight: 700;
+                    color: #fbbf24;
+                    text-align: center;
+                    user-select: none;
+                    cursor: default;
+                }
+
+                .reserved-costs {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px;
+                    flex: 1 1 auto;
+
+                    .cost-item {
+                        width: 24px;
+                        height: 24px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border-radius: 4px;
+                        font-size: 0.85rem;
+                        font-weight: 600;
+                        color: #fff;
+                        user-select: none;
+                        cursor: default;
+
+                        &.cost-Black {
+                            background: #000000;
+                        }
+
+                        &.cost-White {
+                            background: #FFFFFF;
+                            color: #333;
+                        }
+
+                        &.cost-Red {
+                            background: #FF0000;
+                        }
+
+                        &.cost-Blue {
+                            background: #0000FF;
+                        }
+
+                        &.cost-Green {
+                            background: #00AA00;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.operate {
+
+    &,
+    & * {
+        cursor: pointer !important;
+    }
+
+    &:hover {
+        border-color: #d6d609;
+    }
+}
+
+.taking-gems {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: $bg-bottom;
+    border-radius: 12px;
+    padding-right: 10px;
+    margin: 0;
+    box-shadow: none;
+    z-index: 100;
+    min-width: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+
+    .current-gems {
+        margin-bottom: 0;
+        padding: 0;
+        background: inherit;
+        border-radius: 0;
+    }
+
+    .gems-and-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 12px 0;
+        margin-top: 15px;
+    }
+
+    .gem-slots {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 0;
+        margin-top: 0;
+        padding: 0;
+        justify-content: flex-start;
+        align-items: center;
+
+        .gem-slot {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &.empty {
+                background: #6B6B6B;
+            }
+        }
+    }
+
+    .taking-actions {
+        display: flex;
+        gap: 12px;
+        padding: 0 18px;
+        justify-content: flex-start;
+        align-items: center;
+
+        button {
+            padding: 10px 0;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 80px;
+            text-align: center;
+
+            &.take-btn {
+                background: $primary;
+                color: white;
+
+                &:hover {
+                    background: color.adjust($primary, $lightness: -10%);
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+                }
+            }
+
+            &.cancel-btn {
+                background: #e5e7eb;
+                color: #374151;
+
+                &:hover {
+                    background: #d1d5db;
+                    transform: translateY(-2px);
+                }
+            }
+        }
+    }
+}
+
+.taking-card {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: $bg-panel;
+    border: 2px solid $primary;
+    border-radius: 8px;
+    padding: 40px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    min-width: 600px;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+
+    .card-display {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+
+        .card {
+            width: 130px;
+            height: 162px;
+            border: 3px solid transparent;
+            border-radius: 6px;
+            padding: 4px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            flex-wrap: nowrap;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+            &.bonus-Black {
+                background-color: #6B6B6B;
+            }
+
+            &.bonus-White {
+                background-color: #DDDDDD;
+            }
+
+            &.bonus-Red {
+                background-color: #E37A7A;
+            }
+
+            &.bonus-Blue {
+                background-color: #6F83FF;
+            }
+
+            &.bonus-Green {
+                background-color: #7FCC7F;
+            }
+
+            .card-left {
                 display: flex;
                 flex-direction: column;
-                gap: 4px;
-                align-items: flex-end;
-            }
-
-            .criteria-square {
-                width: 22px;
-                height: 28px;
-                border-radius: 4px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: bold;
-                font-size: 0.85em;
-                color: #fff;
-                border: 2px solid rgba(0, 0, 0, 0.12);
+                justify-content: flex-start;
+                align-items: flex-start;
+                flex: 0 0 auto;
+                margin-right: 8px;
+                height: 100%;
                 box-sizing: border-box;
+                white-space: nowrap;
+                padding-top: 4px;
             }
 
-            .criteria-square-Black {
-                background-color: #000000;
-                color: #fff;
-                border-color: #000000
+            .card-score {
+                font-size: 2.8em;
+                font-weight: bold;
+                color: $accent;
+                line-height: 1;
             }
 
-            .criteria-square-White {
-                background-color: #FFFFFF;
-                color: #333;
-                border-color: #CCCCCC
+            .card-right {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-start;
+                flex: 1 1 auto;
+                height: 100%;
+                box-sizing: border-box;
+
+                .card-costs {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 2px;
+
+                    .cost-gem {
+                        width: 24px;
+                        height: 24px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border-radius: 4px;
+                        font-size: 0.75rem;
+                        font-weight: 600;
+                        color: #fff;
+                        user-select: none;
+
+                        &.cost-gem-Black {
+                            background: #000000;
+                        }
+
+                        &.cost-gem-White {
+                            background: #FFFFFF;
+                            color: #000000;
+                        }
+
+                        &.cost-gem-Red {
+                            background: #FF0000;
+                        }
+
+                        &.cost-gem-Blue {
+                            background: #0000FF;
+                        }
+
+                        &.cost-gem-Green {
+                            background: #00AA00;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .gem-selection {
+        width: 100%;
+        padding: 24px;
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 6px;
+        text-align: center;
+
+        .gem-row {
+            justify-content: center;
+        }
+    }
+
+    .taking-actions {
+        display: flex;
+        gap: 12px;
+        width: 100%;
+        justify-content: center;
+
+        button {
+            padding: 12px 32px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &.take-btn {
+                background: $primary;
+                color: white;
+
+                &:hover {
+                    background: color.adjust($primary, $lightness: -10%);
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+                }
             }
 
-            .criteria-square-Red {
-                background-color: #FF0000;
-                color: #fff;
-                border-color: #FF0000
-            }
+            &.cancel-btn {
+                background: #e5e7eb;
+                color: #374151;
 
-            .criteria-square-Blue {
-                background-color: #0000FF;
-                color: #fff;
-                border-color: #0000FF
-            }
-
-            .criteria-square-Green {
-                background-color: #00AA00;
-                color: #fff;
-                border-color: #00AA00
+                &:hover {
+                    background: #d1d5db;
+                    transform: translateY(-2px);
+                }
             }
         }
     }

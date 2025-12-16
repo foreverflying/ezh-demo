@@ -1,5 +1,6 @@
 import { CommonError } from 'justrun-ws'
-import { $ezh, Com, useState, bindData, navigate } from 'ezh'
+import { loading } from 'ezh-model'
+import { $ezh, Com, useState, bindData, navigate, Effect } from 'ezh'
 import { client } from '../client'
 import { nopFunc } from '../common/utils'
 import { User } from '../models/User'
@@ -8,37 +9,38 @@ import './MainView.scss'
 export const MainView: Com = () => {
     const { userId } = client
     if (!userId) {
-        client.SignUpAnonymously().catch(nopFunc)
+        return <Effect on={() => {
+            client.SignUpAnonymously()
+        }} />
+    }
+    const user = client.loadModel(User, { userId }, false)
+    if (user === loading) {
         return
     }
-    const user = client.loadModel(User, { userId })
     if (!user) {
-        return
+        return <Effect on={() => {
+            client.resetAuthState()
+        }} />
     }
-    const state = useState(
-        {
-            gameCode: '',
-            playerCount: '2',
-            error: '',
-        },
-        (ver, state) => {
-            if (ver === 1) {
-                if (user.gameId) {
-                    client.leaveGame(user.gameId).catch(nopFunc)
-                }
-                state.gameCode = ''
-                state.playerCount = '2'
-                state.error = ''
-            }
-        },
-    )
+    if (user.gameId) {
+        return <Effect on={() => {
+            client.leaveGame(user.gameId!).catch(nopFunc)
+        }} />
+    }
+    const state = useState({
+        gameCode: '',
+        playerCount: '2',
+        error: '',
+    })
     const handleVisitGame = async () => {
         const { gameCode } = state
         if (state.error) {
             state.error = ''
         }
         try {
-            const { gameId } = await client.visitGame(parseInt(gameCode))
+            const { gameId } = await client.visitGame(gameCode)
+            state.gameCode = ''
+            state.playerCount = '2'
             navigate(`/game/${gameId}`)
         } catch (err) {
             if (err instanceof CommonError) {
@@ -97,10 +99,8 @@ export const MainView: Com = () => {
                         className='input'
                         type='text'
                         inputMode='numeric'
-                        pattern='[0-9]*'
-                        maxLength={6}
-                        value={bindData(state, 'gameCode')}
                         placeholder='Game Code'
+                        value={bindData(state, 'gameCode')}
                         onfocus={(e) => {
                             const input = e.target as HTMLInputElement
                             input.value = ''

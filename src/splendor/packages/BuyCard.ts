@@ -3,7 +3,7 @@ import { DoneResp, JsonRequest } from '../defPackage'
 export type BuyCardReq = {
     userId: string
     gameId: string
-    cardIndex: number
+    cardId: string
     gems: number[]
 }
 

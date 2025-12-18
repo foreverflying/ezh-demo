@@ -1,11 +1,10 @@
-import { $ezh, Com, useState, navigate } from 'ezh'
+import { $ezh, Com, navigate, Effect } from 'ezh'
 import { client } from '../client'
 import { nopFunc } from '../common/utils'
 import { Game, GameInfo } from '../models/Game'
 import { User } from '../models/User'
 import { PrepareView } from './PrepareView'
 import { PlayView } from './PlayView'
-import { Effect } from './Effect'
 
 export const GameView: Com<{ gameId: string }> = ({ gameId }) => {
     const { userId } = client

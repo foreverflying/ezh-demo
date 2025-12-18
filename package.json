@@ -30,9 +30,9 @@
     "webpack-dev-server": "^5.2.0"
   },
   "dependencies": {
-    "ezh": "file:./src/ezh",
-    "ezh-model": "file:./src/ezh-model",
-    "justrun-ws": "file:./src/justrun-ws",
-    "path-parser": "^6.1.0"
+    "ezh": "file://./src/ezh",
+    "ezh-model": "file://./src/ezh-model",
+    "justrun-loader": "file://./src/justrun-loader",
+    "justrun-ws": "file://./src/justrun-ws"
   }
 }

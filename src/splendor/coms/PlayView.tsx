@@ -17,6 +17,7 @@ type GameState = {
         gems: number[]
     }
 }
+
 const validateTakingGems = (gameGems: number[], playerGems: number[], taking: number[]): number => {
     if (taking.length > 3) {
         return -1
@@ -120,7 +121,12 @@ const NobleRow: Com<{ nobles: string[] }> = ({ nobles }) => {
     </div>
 }
 
-const PlayerTab: Com<{ players: Player[], state: GameState }> = ({ players, state }) => {
+const PlayerTab: Com<{ game: Game, players: Player[], state: GameState }> = ({ game, players, state }) => {
+    useState({ lastCurrent: game.current }, (ver, innerState) => {
+        if (ver && game.current !== innerState.lastCurrent) {
+            state.selectedPlayer = innerState.lastCurrent = game.current
+        }
+    })
     return <div className='player-tabs'>
         {players.map((player, idx) => {
             const className = 'player-tab'
@@ -217,7 +223,7 @@ const PlayersPanel: Com<{ game: Game, state: GameState }> = ({ game, state }) =>
     }
     const player = players[state.selectedPlayer]
     return <div className='players-panel'>
-        <PlayerTab players={players} state={state} />
+        <PlayerTab game={game} players={players} state={state} />
         <div className='player-detail'>
             <div className='player-left'>
                 <div className='player-row'>

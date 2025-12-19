@@ -17,6 +17,32 @@ type GameState = {
         gems: number[]
     }
 }
+const validateTakingGems = (gameGems: number[], playerGems: number[], taking: number[]): number => {
+    if (taking.length > 3) {
+        return -1
+    }
+    const total = playerGems.reduce((sum, count) => sum + count, 0)
+    if (total + taking.length > 10) {
+        return -1
+    }
+    const [first, second, third] = taking
+    if (third) {
+        if (first === second) {
+            return -1
+        }
+        if (first === third || second === third) {
+            // TODO: additional check in extension version
+            return -1
+        }
+        return 1
+    }
+    if (second) {
+        if (first === second) {
+            return gameGems[second] < 4 ? -1 : 1
+        }
+    }
+    return 0
+}
 
 const CardRow: Com<{ cards: string[], onClickCard?: (id: string) => void }> = ({ cards, onClickCard }) => {
     const operateCls = onClickCard ? ' operate' : ''
@@ -33,8 +59,8 @@ const CardRow: Com<{ cards: string[], onClickCard?: (id: string) => void }> = ({
                 </div>
                 <div className='card-right'>
                     <div className='card-costs'>
-                        {card.cost.map((count, index) => !count ? null : (
-                            <div key={index} className={`cost-gem cost-gem-${GemType[index + 1]}`}>
+                        {card.cost.map((count, idx) => !count ? null : (
+                            <div key={idx} className={`cost-gem cost-gem-${GemType[idx + 1]}`}>
                                 {count}
                             </div>
                         ))}
@@ -45,14 +71,14 @@ const CardRow: Com<{ cards: string[], onClickCard?: (id: string) => void }> = ({
     </div>
 }
 
-const GemRow: Com<{ gems: number[], onClickGem?: (index: number) => void }> = ({ gems, onClickGem }) => {
+const GemRow: Com<{ gems: number[], onClickGem?: (idx: number) => void }> = ({ gems, onClickGem }) => {
     return <div className='gem-row'>
-        {gems.map((count, index) => {
-            const operateCls = onClickGem && index && count ? ' operate' : ''
+        {gems.map((count, idx) => {
+            const operateCls = onClickGem && idx && count ? ' operate' : ''
             return <div
-                key={index}
-                className={`gem gem-circle gem-${GemType[index]}${!count ? ' empty' : ''}${operateCls}`}
-                onclick={!operateCls ? undefined : () => onClickGem!(index)}
+                key={idx}
+                className={`gem gem-circle gem-${GemType[idx]}${!count ? ' empty' : ''}${operateCls}`}
+                onclick={!operateCls ? undefined : () => onClickGem!(idx)}
             >
                 <div className='gem-count'>{count ? count : ''}</div>
             </div>
@@ -60,14 +86,17 @@ const GemRow: Com<{ gems: number[], onClickGem?: (index: number) => void }> = ({
     </div>
 }
 
-const GameInfo: Com<{ game: Game }> = ({ game }) => {
+const GameInfo: Com<{ game: Game, currPlayer: Player }> = ({ game, currPlayer }) => {
     return <div className='game-info'>
         <div>
             <button className='leave-btn' onclick={() => navigate('/')}>Leave Game</button>
         </div>
         <div className='code-value'>{game.gameCode.toString()}</div>
-        <div className='round-label'>Round</div>
-        <div className='round-value'>{game.round}</div>
+        <div className='round-label'>
+            Round
+            <span className='round-value'>{game.round}</span>
+        </div>
+        <div className='player-name'>{currPlayer.name}</div>
     </div>
 }
 
@@ -79,8 +108,8 @@ const NobleRow: Com<{ nobles: string[] }> = ({ nobles }) => {
                 <div key={id} className='noble'>
                     <div className='noble-score'>{noble.score}</div>
                     <div className='noble-criteria'>
-                        {noble.criteria.map((count, index) => !count ? null : (
-                            <div key={index} className={`criteria-square criteria-square-${GemType[index + 1]}`}>
+                        {noble.criteria.map((count, idx) => !count ? null : (
+                            <div key={idx} className={`criteria-square criteria-square-${GemType[idx + 1]}`}>
                                 {count}
                             </div>
                         ))}
@@ -213,7 +242,7 @@ const PlayersPanel: Com<{ game: Game, state: GameState }> = ({ game, state }) =>
     </div>
 }
 
-const TakingGemsOverlay: Com<{ game: Game, gameState: GameState }> = ({ game, gameState }) => {
+const TakingGemsOverlay: Com<{ game: Game, gameState: GameState, player: Player }> = ({ game, gameState, player }) => {
     const takingGems = gameState.takingGems!
     const takingState = useState(
         {
@@ -232,10 +261,12 @@ const TakingGemsOverlay: Com<{ game: Game, gameState: GameState }> = ({ game, ga
         <div className='current-gems'>
             <GemRow
                 gems={takingState.gems}
-                onClickGem={(index) => {
-                    // TODO: validate taking rules
-                    takingGems.push(index)
-                    takingState.gems[index]--
+                onClickGem={(idx) => {
+                    if (validateTakingGems(game.gems, player.gems, [...takingGems, idx]) < 0) {
+                        return
+                    }
+                    takingGems.push(idx)
+                    takingState.gems[idx]--
                 }}
             />
         </div>
@@ -260,10 +291,17 @@ const TakingGemsOverlay: Com<{ game: Game, gameState: GameState }> = ({ game, ga
                 })}
             </div>
             <div className='taking-actions'>
-                <button className='take-btn' onclick={() => {
-                    // Handle take gems action
-                    gameState.takingGems = undefined
-                }}>Take</button>
+                <button
+                    className='take-btn'
+                    disabled={validateTakingGems(game.gems, player.gems, takingGems) !== 1}
+                    onclick={async () => {
+                        if (await client.takeGems(game.gameId, takingGems)) {
+                            gameState.takingGems = undefined
+                        }
+                    }}
+                >
+                    Take
+                </button>
                 <button className='cancel-btn' onclick={() => {
                     gameState.takingGems = undefined
                 }}>Cancel</button>
@@ -273,6 +311,10 @@ const TakingGemsOverlay: Com<{ game: Game, gameState: GameState }> = ({ game, ga
 }
 
 export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
+    const currPlayer = client.loadModel(Player, { playerId: game.players[game.current] })
+    if (!currPlayer) {
+        return null
+    }
     const { cards, gems, nobles } = game
     const state = useState<GameState>({
         userPlayerId: user.playerId,
@@ -281,12 +323,12 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
         takingCard: undefined,
     })
 
-    let onClickGem: ((index: number) => void) | undefined = undefined
+    let onClickGem: ((idx: number) => void) | undefined = undefined
     let onClickCard: ((cardId: string) => void) | undefined = undefined
     const isOperating = game.players[game.current] === user.playerId
     if (isOperating && !state.takingGems && !state.takingCard) {
-        onClickGem = (index: number) => {
-            state.takingGems = [index]
+        onClickGem = (idx: number) => {
+            state.takingGems = [idx]
         }
         onClickCard = (cardId: string) => {
             state.takingCard = { cardId, gems: [0, 0, 0, 0, 0, 0] }
@@ -303,11 +345,11 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
                     </div>
                     <div className='gems'>
                         <GemRow gems={gems} onClickGem={onClickGem} />
-                        {state.takingGems && <TakingGemsOverlay game={game} gameState={state} />}
+                        {state.takingGems && <TakingGemsOverlay game={game} gameState={state} player={currPlayer} />}
                     </div>
                 </div>
                 <div className='right-section'>
-                    <GameInfo game={game} />
+                    <GameInfo game={game} currPlayer={currPlayer} />
                 </div>
             </div>
 
@@ -336,8 +378,8 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
                                     </div>
                                     <div className='card-right'>
                                         <div className='card-costs'>
-                                            {card.cost.map((count, index) => !count ? null : (
-                                                <div key={index} className={`cost-gem cost-gem-${GemType[index + 1]}`}>
+                                            {card.cost.map((count, idx) => !count ? null : (
+                                                <div key={idx} className={`cost-gem cost-gem-${GemType[idx + 1]}`}>
                                                     {count}
                                                 </div>
                                             ))}

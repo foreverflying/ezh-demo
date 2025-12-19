@@ -208,7 +208,7 @@ $max-width: 960px;
         color: #000;
 
         &.empty {
-            background-color: #fffdf0;
+            background-color: #fff0b3;
             color: transparent;
         }
     }
@@ -218,7 +218,7 @@ $max-width: 960px;
         color: #fff;
 
         &.empty {
-            background-color: #ebebeb;
+            background-color: #c0c0c0;
             color: transparent;
         }
     }
@@ -228,7 +228,7 @@ $max-width: 960px;
         color: #333;
 
         &.empty {
-            background-color: #fcfcfc;
+            background-color: #f0f0f0;
             color: transparent;
         }
     }
@@ -238,7 +238,7 @@ $max-width: 960px;
         color: #fff;
 
         &.empty {
-            background-color: #fff1f0;
+            background-color: #ffd9d9;
             color: transparent;
         }
     }
@@ -248,7 +248,7 @@ $max-width: 960px;
         color: #fff;
 
         &.empty {
-            background-color: #f0f0ff;
+            background-color: #d9d9ff;
             color: transparent;
         }
     }
@@ -258,7 +258,7 @@ $max-width: 960px;
         color: #fff;
 
         &.empty {
-            background-color: #f0f5f0;
+            background-color: #d9e6d9;
             color: transparent;
         }
     }
@@ -383,9 +383,17 @@ $max-width: 960px;
     }
 
     .round-value {
-        font-size: 2.8rem;
+        margin-left: 10px;
+        font-size: 1.5rem;
         font-weight: 600;
         color: #cdcdcd
+    }
+
+    .player-name {
+        margin-top: 10px;
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: $accent;
     }
 }
 
@@ -498,7 +506,7 @@ $max-width: 960px;
                         color: #fff;
 
                         &.empty {
-                            background: #ebebeb;
+                            background: #c0c0c0;
                             color: transparent;
                         }
                     }
@@ -508,7 +516,7 @@ $max-width: 960px;
                         color: #333;
 
                         &.empty {
-                            background: #f7f7f7;
+                            background: #e8e8e8;
                             color: transparent;
                         }
                     }
@@ -518,7 +526,7 @@ $max-width: 960px;
                         color: #fff;
 
                         &.empty {
-                            background: #fff1f0;
+                            background: #ffd9d9;
                             color: transparent;
                         }
                     }
@@ -528,7 +536,7 @@ $max-width: 960px;
                         color: #fff;
 
                         &.empty {
-                            background: #f0f0ff;
+                            background: #d9d9ff;
                             color: transparent;
                         }
                     }
@@ -538,7 +546,7 @@ $max-width: 960px;
                         color: #fff;
 
                         &.empty {
-                            background: #f0f5f0;
+                            background: #e6f0e6;
                             color: transparent;
                         }
                     }
@@ -565,7 +573,7 @@ $max-width: 960px;
                         border-color: #d4a000;
 
                         &.empty {
-                            background: #fffdf0;
+                            background: #fff0b3;
                             color: transparent;
                             border-color: #f0e6c0;
                         }
@@ -576,7 +584,7 @@ $max-width: 960px;
                         border-color: #333;
 
                         &.empty {
-                            background: #ebebeb;
+                            background: #c0c0c0;
                             color: transparent;
                             border-color: #d0d0d0;
                         }
@@ -588,7 +596,7 @@ $max-width: 960px;
                         border-color: #ccc;
 
                         &.empty {
-                            background: #fcfcfc;
+                            background: #f0f0f0;
                             color: transparent;
                             border-color: #e8e8e8;
                         }
@@ -599,7 +607,7 @@ $max-width: 960px;
                         border-color: #cc0000;
 
                         &.empty {
-                            background: #fff1f0;
+                            background: #ffd9d9;
                             color: transparent;
                             border-color: #ffc9c9;
                         }
@@ -610,7 +618,7 @@ $max-width: 960px;
                         border-color: #0000cc;
 
                         &.empty {
-                            background: #f0f0ff;
+                            background: #d9d9ff;
                             color: transparent;
                             border-color: #c9c9ff;
                         }
@@ -621,7 +629,7 @@ $max-width: 960px;
                         border-color: #008800;
 
                         &.empty {
-                            background: #f0f5f0;
+                            background: #d9e6d9;
                             color: transparent;
                             border-color: #c9dcc9;
                         }
@@ -793,10 +801,15 @@ $max-width: 960px;
                 background: $primary;
                 color: white;
 
-                &:hover {
+                &:hover:not(:disabled) {
                     background: color.adjust($primary, $lightness: -10%);
                     transform: translateY(-2px);
                     box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+                }
+
+                &:disabled {
+                    cursor: not-allowed;
+                    opacity: 0.6;
                 }
             }
 

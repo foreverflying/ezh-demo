@@ -52,13 +52,22 @@ wsClient.registerRequest(0x10, BuyCardRequest)
 wsClient.registerRequest(0x11, TakeGemsRequest)
 wsClient.registerRequest(0x12, ReserveCardRequest)
 
+let isRequesting = false
+
 const sendRequest = async <RequestT, ResponseT>(
     request: RequestWrapper<RequestT, ResponseT>,
 ): Promise<ResponseT | undefined> => {
-    return wsClient.sendRequest(request).catch((err) => {
-        console.log('error:', err)
-        return undefined
-    })
+    if (!isRequesting) {
+        isRequesting = true
+        return wsClient.sendRequest(request)
+            .catch((err) => {
+                console.log('error:', err)
+                return undefined
+            })
+            .finally(() => {
+                isRequesting = false
+            })
+    }
 }
 
 const sendMessage = <MessageT>(message: MessageWrapper<MessageT>): void => {
@@ -88,68 +97,60 @@ export const client = {
     loadModel<ModelT extends Model<ModelT>>(
         modelCtor: ModelCtor<ModelT>,
         keyObj: KeyObj<ModelT>,
-        cacheOld = true,
+        showLoading?: true,
     ): ModelT | undefined {
-        return modelLoader.load(modelCtor, keyObj, cacheOld)
+        return modelLoader.load(modelCtor, keyObj, showLoading)
     },
     async createGame(playerCount: number) {
-        const resp = await wsClient.sendRequest(new CreateGameRequest({
+        return sendRequest(new CreateGameRequest({
             userId: authState.cid,
             playerCount,
         }))
-        return resp
     },
     async visitGame(gameCode: string) {
-        const resp = await wsClient.sendRequest(new VisitGameRequest({
+        return sendRequest(new VisitGameRequest({
             userId: authState.cid,
             gameCode,
         }))
-        return resp
     },
     async leaveGame(gameId: string) {
-        const resp = await wsClient.sendRequest(new LeaveGameRequest({
+        return sendRequest(new LeaveGameRequest({
             userId: authState.cid,
             gameId,
         }))
-        return resp
     },
     async joinGame(gameId: string, playerName: string) {
-        const resp = await wsClient.sendRequest(new JoinGameRequest({
+        return sendRequest(new JoinGameRequest({
             userId: authState.cid,
             gameId,
             playerName,
         }))
-        return resp
     },
     async quitGame(gameId: string) {
-        const resp = await wsClient.sendRequest(new QuitGameRequest({
+        return sendRequest(new QuitGameRequest({
             userId: authState.cid,
             gameId,
         }))
-        return resp
     },
     async startGame(gameId: string) {
-        const resp = await wsClient.sendRequest(new StartGameRequest({
+        return sendRequest(new StartGameRequest({
             userId: authState.cid,
             gameId,
         }))
-        return resp
     },
     async takeGems(gameId: string, gems: number[]) {
-        const resp = await wsClient.sendRequest(new TakeGemsRequest({
+        return sendRequest(new TakeGemsRequest({
             userId: authState.cid,
             gameId,
             gems,
         }))
-        return resp
     },
     async buyCard(gameId: string, cardId: string, gems: number[]) {
-        const resp = await wsClient.sendRequest(new BuyCardRequest({
+        return sendRequest(new BuyCardRequest({
             userId: authState.cid,
             gameId,
             cardId,
             gems,
         }))
-        return resp
     },
 }

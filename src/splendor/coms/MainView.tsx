@@ -1,6 +1,6 @@
-import { CommonError } from 'justrun-ws'
-import { loading } from 'ezh-model'
 import { $ezh, Com, useState, bindData, navigate, Effect } from 'ezh'
+import { loading } from 'ezh-model'
+import { CommonError } from 'justrun-ws'
 import { client } from '../client'
 import { nopFunc } from '../common/utils'
 import { User } from '../models/User'
@@ -13,7 +13,7 @@ export const MainView: Com = () => {
             client.SignUpAnonymously()
         }} />
     }
-    const user = client.loadModel(User, { userId }, false)
+    const user = client.loadModel(User, { userId }, true)
     if (user === loading) {
         return
     }
@@ -38,10 +38,12 @@ export const MainView: Com = () => {
             state.error = ''
         }
         try {
-            const { gameId } = await client.visitGame(gameCode)
-            state.gameCode = ''
-            state.playerCount = '2'
-            navigate(`/game/${gameId}`)
+            const result = await client.visitGame(gameCode)
+            if (result) {
+                state.gameCode = ''
+                state.playerCount = '2'
+                navigate(`/game/${result.gameId}`)
+            }
         } catch (err) {
             if (err instanceof CommonError) {
                 state.error = err.data
@@ -54,8 +56,10 @@ export const MainView: Com = () => {
             state.error = ''
         }
         try {
-            const { gameId } = await client.createGame(parseInt(state.playerCount))
-            navigate(`/game/${gameId}`)
+            const result = await client.createGame(parseInt(state.playerCount))
+            if (result) {
+                navigate(`/game/${result.gameId}`)
+            }
         } catch (err) {
             if (err instanceof CommonError) {
                 state.error = err.data

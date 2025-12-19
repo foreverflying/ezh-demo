@@ -33,8 +33,10 @@ export const PrepareView: Com<{ game: Game, gameInfo: GameInfo, user: User }> = 
             return
         }
         try {
-            state.error = ''
-            await client.joinGame(game.gameId, state.playerName.trim())
+            if (await client.joinGame(game.gameId, state.playerName.trim())) {
+                state.error = ''
+                state.playerName = ''
+            }
         } catch (error) {
             state.error = error instanceof CommonError ? error.data : 'Failed to join game'
         }
@@ -42,18 +44,19 @@ export const PrepareView: Com<{ game: Game, gameInfo: GameInfo, user: User }> = 
 
     const handleQuitGame = async () => {
         try {
-            state.error = ''
-            state.playerName = ''
-            await client.quitGame(game.gameId)
+            if (await client.quitGame(game.gameId)) {
+                state.error = ''
+            }
         } catch (error) {
             state.error = error instanceof CommonError ? error.data : 'Failed to leave game'
         }
     }
 
     const handleStartGame = async () => {
-        state.error = ''
         try {
-            await client.startGame(game.gameId)
+            if (await client.startGame(game.gameId)) {
+                state.error = ''
+            }
         } catch (error) {
             state.error = error instanceof CommonError ? error.data : 'Failed to start game'
         }

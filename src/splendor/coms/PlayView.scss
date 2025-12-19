@@ -35,6 +35,128 @@ $max-width: 960px;
 
 }
 
+.card {
+    /* layout cards as a horizontal row so score and costs can sit side-by-side */
+    width: 130px;
+    height: 162px;
+    border: 3px solid transparent;
+    border-radius: 6px;
+    padding: 4px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow: hidden;
+
+    &.bonus-Black {
+        background-color: #6B6B6B;
+    }
+
+    &.bonus-White {
+        background-color: #DDDDDD;
+    }
+
+    &.bonus-Red {
+        background-color: #E37A7A;
+    }
+
+    &.bonus-Blue {
+        background-color: #6F83FF;
+    }
+
+    &.bonus-Green {
+        background-color: #7FCC7F;
+    }
+
+    .card-left {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        flex: 0 0 auto;
+        margin-right: 8px;
+        height: 100%;
+        box-sizing: border-box;
+        white-space: nowrap;
+        padding-top: 4px;
+    }
+
+    .card-score {
+        font-size: 2.8em;
+        font-weight: bold;
+        color: $accent;
+        user-select: none;
+        cursor: default;
+    }
+
+    .card-right {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: flex-end;
+        flex: 1 1 auto;
+        height: 100%;
+        box-sizing: border-box;
+        white-space: nowrap;
+        padding-bottom: 4px;
+    }
+
+    .card-costs {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex-wrap: nowrap;
+    }
+
+    .cost-gem {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #333;
+        font-size: 1.2em;
+        border: 2px solid;
+        flex: 0 0 auto;
+        white-space: nowrap;
+        user-select: none;
+        cursor: default;
+
+        &.cost-gem-Black {
+            background-color: #000000;
+            border-color: #000000;
+            color: #fff;
+        }
+
+        &.cost-gem-White {
+            background-color: #FFFFFF;
+            border-color: #CCCCCC;
+        }
+
+        &.cost-gem-Red {
+            background-color: #FF0000;
+            border-color: #FF0000;
+            color: #fff;
+        }
+
+        &.cost-gem-Blue {
+            background-color: #0000FF;
+            border-color: #0000FF;
+            color: #fff;
+        }
+
+        &.cost-gem-Green {
+            background-color: #00AA00;
+            border-color: #00AA00;
+            color: #fff;
+        }
+    }
+}
+
 .cards {
     width: fit-content;
 
@@ -44,128 +166,6 @@ $max-width: 960px;
         gap: 8px;
         flex-wrap: nowrap;
         max-width: 688px;
-    }
-
-    .card {
-        /* layout cards as a horizontal row so score and costs can sit side-by-side */
-        width: 130px;
-        height: 162px;
-        border: 3px solid transparent;
-        border-radius: 6px;
-        padding: 4px;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
-        flex-wrap: nowrap;
-        overflow: hidden;
-
-        &.bonus-Black {
-            background-color: #6B6B6B;
-        }
-
-        &.bonus-White {
-            background-color: #DDDDDD;
-        }
-
-        &.bonus-Red {
-            background-color: #E37A7A;
-        }
-
-        &.bonus-Blue {
-            background-color: #6F83FF;
-        }
-
-        &.bonus-Green {
-            background-color: #7FCC7F;
-        }
-
-        .card-left {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: flex-start;
-            flex: 0 0 auto;
-            margin-right: 8px;
-            height: 100%;
-            box-sizing: border-box;
-            white-space: nowrap;
-            padding-top: 4px;
-        }
-
-        .card-score {
-            font-size: 2.8em;
-            font-weight: bold;
-            color: $accent;
-            user-select: none;
-            cursor: default;
-        }
-
-        .card-right {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: flex-end;
-            flex: 1 1 auto;
-            height: 100%;
-            box-sizing: border-box;
-            white-space: nowrap;
-            padding-bottom: 4px;
-        }
-
-        .card-costs {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            flex-wrap: nowrap;
-        }
-
-        .cost-gem {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: #333;
-            font-size: 1.2em;
-            border: 2px solid;
-            flex: 0 0 auto;
-            white-space: nowrap;
-            user-select: none;
-            cursor: default;
-
-            &.cost-gem-Black {
-                background-color: #000000;
-                border-color: #000000;
-                color: #fff;
-            }
-
-            &.cost-gem-White {
-                background-color: #FFFFFF;
-                border-color: #CCCCCC;
-            }
-
-            &.cost-gem-Red {
-                background-color: #FF0000;
-                border-color: #FF0000;
-                color: #fff;
-            }
-
-            &.cost-gem-Blue {
-                background-color: #0000FF;
-                border-color: #0000FF;
-                color: #fff;
-            }
-
-            &.cost-gem-Green {
-                background-color: #00AA00;
-                border-color: #00AA00;
-                color: #fff;
-            }
-        }
     }
 }
 
@@ -827,128 +827,211 @@ $max-width: 960px;
 }
 
 .taking-card {
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    background: $bg-panel;
-    border: 2px solid $primary;
-    border-radius: 8px;
-    padding: 40px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: $bg-bottom;
+    border: none;
+    border-radius: 12px;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
     z-index: 100;
-    min-width: 600px;
-    max-width: 800px;
+    min-width: auto;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 24px;
+    gap: 0;
 
-    .card-display {
-        position: absolute;
-        top: 20px;
-        right: 20px;
+    .overlay-top-gems {
+        padding: 0;
+        margin: 0;
+        background: inherit;
 
-        .card {
-            width: 130px;
-            height: 162px;
-            border: 3px solid transparent;
+        .gem-row {
+            margin-top: 0;
+        }
+    }
+
+    .overlay-card-area {
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding: 0;
+        min-height: 162px;
+        gap: 8px;
+
+        .card-display {
+            position: static;
+            flex-shrink: 0;
+        }
+
+        .buy-info {
+            background: #e8e8e8;
             border-radius: 6px;
-            padding: 4px;
-            box-sizing: border-box;
+            padding: 0;
+            padding-bottom: 0;
+            height: 162px;
             display: flex;
-            flex-direction: row;
-            justify-content: flex-start;
-            align-items: center;
-            flex-wrap: nowrap;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-start;
+            flex-shrink: 0;
+            width: fit-content;
+            box-sizing: border-box;
+            gap: 4px;
 
-            &.bonus-Black {
-                background-color: #6B6B6B;
-            }
-
-            &.bonus-White {
-                background-color: #DDDDDD;
-            }
-
-            &.bonus-Red {
-                background-color: #E37A7A;
-            }
-
-            &.bonus-Blue {
-                background-color: #6F83FF;
-            }
-
-            &.bonus-Green {
-                background-color: #7FCC7F;
-            }
-
-            .card-left {
+            .buy-info-lines {
                 display: flex;
                 flex-direction: column;
-                justify-content: flex-start;
-                align-items: flex-start;
-                flex: 0 0 auto;
-                margin-right: 8px;
-                height: 100%;
-                box-sizing: border-box;
-                white-space: nowrap;
-                padding-top: 4px;
-            }
+                gap: 4px;
+                width: 100%;
+                padding-left: 8px;
+                padding-right: 4px;
+                padding-bottom: 11px;
 
-            .card-score {
-                font-size: 2.8em;
-                font-weight: bold;
-                color: $accent;
-                line-height: 1;
-            }
-
-            .card-right {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: flex-start;
-                flex: 1 1 auto;
-                height: 100%;
-                box-sizing: border-box;
-
-                .card-costs {
+                .buy-card-cost-line {
                     display: flex;
-                    flex-direction: column;
-                    gap: 2px;
+                    align-items: center;
+                    gap: 4px;
+                    height: 32px;
+                    flex: 0 0 auto;
 
-                    .cost-gem {
+                    .operator {
+                        font-weight: bold;
+                        color: #666;
+                        font-size: 0.9rem;
+                        flex-shrink: 0;
+                        min-width: 12px;
+                        text-align: center;
+                    }
+
+                    .slot {
+                        margin: 0;
                         width: 24px;
-                        height: 24px;
+                        height: 32px;
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        border-radius: 4px;
-                        font-size: 0.75rem;
+                        border-radius: 6px;
                         font-weight: 600;
-                        color: #fff;
+                        font-size: 0.85rem;
+                        box-sizing: border-box;
                         user-select: none;
+                        cursor: default;
+                        flex-shrink: 0;
+
+                        &.bonus-Black {
+                            background: #6B6B6B;
+                            color: #fff;
+
+                            &.empty {
+                                background: #c0c0c0;
+                                color: transparent;
+                            }
+                        }
+
+                        &.bonus-White {
+                            background: #DDDDDD;
+                            color: #333;
+
+                            &.empty {
+                                background: #e8e8e8;
+                                color: transparent;
+                            }
+                        }
+
+                        &.bonus-Red {
+                            background: #E37A7A;
+                            color: #fff;
+
+                            &.empty {
+                                background: #ffd9d9;
+                                color: transparent;
+                            }
+                        }
+
+                        &.bonus-Blue {
+                            background: #6F83FF;
+                            color: #fff;
+
+                            &.empty {
+                                background: #d9d9ff;
+                                color: transparent;
+                            }
+                        }
+
+                        &.bonus-Green {
+                            background: #7FCC7F;
+                            color: #fff;
+
+                            &.empty {
+                                background: #d9e6d9;
+                                color: transparent;
+                            }
+                        }
+                    }
+
+                    .cost-display {
+                        width: 28px;
+                        height: 28px;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-weight: bold;
+                        color: #333;
+                        font-size: 1.2em;
+                        border: 2px solid;
+                        flex-shrink: 0;
 
                         &.cost-gem-Black {
-                            background: #000000;
+                            background-color: #000000;
+                            border-color: #000000;
+                            color: #fff;
                         }
 
                         &.cost-gem-White {
-                            background: #FFFFFF;
-                            color: #000000;
+                            background-color: #FFFFFF;
+                            border-color: #CCCCCC;
                         }
 
                         &.cost-gem-Red {
-                            background: #FF0000;
+                            background-color: #FF0000;
+                            border-color: #FF0000;
+                            color: #fff;
                         }
 
                         &.cost-gem-Blue {
-                            background: #0000FF;
+                            background-color: #0000FF;
+                            border-color: #0000FF;
+                            color: #fff;
                         }
 
                         &.cost-gem-Green {
-                            background: #00AA00;
+                            background-color: #00AA00;
+                            border-color: #00AA00;
+                            color: #fff;
+                        }
+                    }
+
+                    .slot-group {
+                        display: flex;
+                        gap: 4px;
+                        flex-shrink: 0;
+
+                        .slot-box {
+                            width: 28px;
+                            height: 28px;
+                            border: 2px dashed #999;
+                            border-radius: 50%;
+                            background: rgba(0, 0, 0, 0.05);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+
+                            &.empty {
+                                background: rgba(0, 0, 0, 0.05);
+                            }
                         }
                     }
                 }
@@ -956,41 +1039,49 @@ $max-width: 960px;
         }
     }
 
-    .gem-selection {
-        width: 100%;
-        padding: 24px;
-        background: rgba(0, 0, 0, 0.05);
-        border-radius: 6px;
-        text-align: center;
+    .overlay-bottom-gems {
+        padding: 12px 0;
+        background: inherit;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
 
         .gem-row {
-            justify-content: center;
+            margin-top: 0;
         }
     }
 
     .taking-actions {
         display: flex;
         gap: 12px;
-        width: 100%;
-        justify-content: center;
+        padding: 0 18px;
+        margin-bottom: 12px;
+        justify-content: flex-start;
+        align-items: center;
 
         button {
-            padding: 12px 32px;
+            padding: 10px 0;
             border: none;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 1rem;
             cursor: pointer;
             transition: all 0.2s ease;
+            width: 80px;
+            text-align: center;
 
             &.take-btn {
                 background: $primary;
                 color: white;
 
-                &:hover {
+                &:hover:not(:disabled) {
                     background: color.adjust($primary, $lightness: -10%);
                     transform: translateY(-2px);
                     box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+                }
+
+                &:disabled {
+                    background: #9ca3af;
+                    color: #6b7280;
+                    cursor: not-allowed;
+                    opacity: 0.6;
                 }
             }
 

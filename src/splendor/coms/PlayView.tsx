@@ -45,30 +45,34 @@ const validateTakingGems = (gameGems: number[], playerGems: number[], taking: nu
     return 0
 }
 
-const CardRow: Com<{ cards: string[], onClickCard?: (id: string) => void }> = ({ cards, onClickCard }) => {
-    const operateCls = onClickCard ? ' operate' : ''
-    return <div className='card-row'>
-        {cards.map((id) => {
-            const card = client.loadModel(Card, { id })
-            if (!card) {
-                return null
-            }
-            const onclick = !onClickCard ? undefined : () => onClickCard!(id)
-            return <div key={id} className={`card bonus-${GemType[card.bonus]}${operateCls}`} onclick={onclick}>
-                <div className='card-left'>
-                    {card.score > 0 ? <div className='card-score'>{card.score}</div> : null}
-                </div>
-                <div className='card-right'>
-                    <div className='card-costs'>
-                        {card.cost.map((count, idx) => !count ? null : (
-                            <div key={idx} className={`cost-gem cost-gem-${GemType[idx + 1]}`}>
-                                {count}
-                            </div>
-                        ))}
+const CardView: Com<{ cardId: string, onClick?: (id: string) => void }> = ({ cardId, onClick }) => {
+    const card = client.loadModel(Card, { id: cardId })
+    if (!card) {
+        return null
+    }
+    const operateCls = onClick ? ' operate' : ''
+    const onclick = !onClick ? undefined : () => onClick!(cardId)
+    return <div className={`card bonus-${GemType[card.bonus]}${operateCls}`} onclick={onclick}>
+        <div className='card-left'>
+            {card.score > 0 ? <div className='card-score'>{card.score}</div> : null}
+        </div>
+        <div className='card-right'>
+            <div className='card-costs'>
+                {card.cost.map((count, idx) => !count ? null : (
+                    <div key={idx} className={`cost-gem cost-gem-${GemType[idx + 1]}`}>
+                        {count}
                     </div>
-                </div>
+                ))}
             </div>
-        })}
+        </div>
+    </div>
+}
+
+const CardRow: Com<{ cards: string[], onClickCard?: (id: string) => void }> = ({ cards, onClickCard }) => {
+    return <div className='card-row'>
+        {cards.map((id) => (
+            <CardView key={id} cardId={id} onClick={onClickCard} />
+        ))}
     </div>
 }
 
@@ -316,6 +320,74 @@ const TakingGemsOverlay: Com<{ game: Game, gameState: GameState, player: Player 
     </div>
 }
 
+const BuyCardCostLine: Com<{ cost: number, count: number }> = ({ cost, count }) => {
+    return <div className='buy-card-cost-line'>
+        <div className='operator'>−</div>
+        <div className={`slot bonus bonus-${GemType[cost]} ${!count ? 'empty' : ''}`}>
+            {count > 0 ? count : ''}
+        </div>
+        <div className='operator'>=</div>
+        <div className={`cost-display cost-gem cost-gem-${GemType[cost]}`}>
+            {count}
+        </div>
+        <div className='operator'>:</div>
+        <div className='slot-group'>
+            <div className='slot-box empty'></div>
+            <div className='slot-box empty'></div>
+        </div>
+    </div>
+}
+
+const BuyCardInfo: Com<{ cardId: string, selectedPlayer: Player }> = ({ cardId, selectedPlayer }) => {
+    const card = client.loadModel(Card, { id: cardId })
+    return !card ? null : (
+        <div className='buy-info'>
+            <div className='buy-info-lines'>
+                {card.cost.map((count, idx) => !count ? null : (
+                    <BuyCardCostLine key={idx} cost={idx + 1} count={selectedPlayer.bonuses[idx + 1]} />
+                ))}
+            </div>
+        </div>
+    )
+}
+
+const TakingCardOverlay: Com<{ game: Game, gameState: GameState, selectedPlayer: Player }> = ({ game, gameState, selectedPlayer }) => {
+    const takingCard = gameState.takingCard!
+    const selectedPlayerGems = selectedPlayer.gems
+
+    return <div className='taking-card'>
+        <div className='overlay-top-gems'>
+            <GemRow gems={game.gems} />
+        </div>
+        <div className='overlay-card-area'>
+            <div className='card-display'>
+                <CardView cardId={takingCard.cardId} />
+            </div>
+            <div className='buy-info'>
+                <BuyCardInfo cardId={takingCard.cardId} selectedPlayer={selectedPlayer} />
+            </div>
+        </div>
+        <div className='overlay-bottom-gems'>
+            <GemRow gems={selectedPlayerGems} />
+        </div>
+        <div className='taking-actions'>
+            <button
+                className='take-btn'
+                onclick={async () => {
+                    if (await client.buyCard(game.gameId, takingCard.cardId, takingCard.gems)) {
+                        gameState.takingCard = undefined
+                    }
+                }}
+            >
+                Take
+            </button>
+            <button className='cancel-btn' onclick={() => {
+                gameState.takingCard = undefined
+            }}>Cancel</button>
+        </div>
+    </div>
+}
+
 export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
     const currPlayer = client.loadModel(Player, { playerId: game.players[game.current] })
     if (!currPlayer) {
@@ -328,6 +400,11 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
         takingGems: undefined,
         takingCard: undefined,
     })
+
+    const selectedPlayer = client.loadModel(Player, { playerId: game.players[state.selectedPlayer] })
+    if (!selectedPlayer) {
+        return null
+    }
 
     let onClickGem: ((idx: number) => void) | undefined = undefined
     let onClickCard: ((cardId: string) => void) | undefined = undefined
@@ -352,6 +429,7 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
                     <div className='gems'>
                         <GemRow gems={gems} onClickGem={onClickGem} />
                         {state.takingGems && <TakingGemsOverlay game={game} gameState={state} player={currPlayer} />}
+                        {state.takingCard && <TakingCardOverlay game={game} gameState={state} selectedPlayer={selectedPlayer} />}
                     </div>
                 </div>
                 <div className='right-section'>
@@ -370,45 +448,6 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
             <div className='players'>
                 <PlayersPanel game={game} state={state} />
             </div>
-
-            {/* Taking Card Overlay */}
-            {state.takingCard ? (
-                <div className='taking-card'>
-                    <div className='card-display'>
-                        {(() => {
-                            const card = client.loadModel(Card, { id: state.takingCard!.cardId })
-                            return !card ? null : (
-                                <div className={`card bonus-${GemType[card.bonus]}`}>
-                                    <div className='card-left'>
-                                        {card.score > 0 ? <div className='card-score'>{card.score}</div> : null}
-                                    </div>
-                                    <div className='card-right'>
-                                        <div className='card-costs'>
-                                            {card.cost.map((count, idx) => !count ? null : (
-                                                <div key={idx} className={`cost-gem cost-gem-${GemType[idx + 1]}`}>
-                                                    {count}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            )
-                        })()}
-                    </div>
-                    <div className='gem-selection'>
-                        <GemRow gems={state.takingCard.gems} />
-                    </div>
-                    <div className='taking-actions'>
-                        <button className='take-btn' onclick={() => {
-                            // Handle take card action
-                            state.takingCard = undefined
-                        }}>Take</button>
-                        <button className='cancel-btn' onclick={() => {
-                            state.takingCard = undefined
-                        }}>Cancel</button>
-                    </div>
-                </div>
-            ) : null}
         </div>
     </div>
 }

@@ -6,8 +6,8 @@ import { GameView } from './coms/GameView'
 import { client } from './client'
 
 const routeMap = {
-    connErr: route(ConnErrorView, '/conn-err?:returnTo', false),
-    main: route(MainView, '/', false),
+    connErr: route(ConnErrorView, '/conn-err?returnTo', true),
+    main: route(MainView, '/', true),
     game: route(GameView, '/game/:gameId'),
 }
 

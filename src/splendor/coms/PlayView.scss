@@ -50,23 +50,23 @@ $max-width: 960px;
     flex-wrap: nowrap;
     overflow: hidden;
 
-    &.bonus-Black {
+    &.card-Black {
         background-color: #6B6B6B;
     }
 
-    &.bonus-White {
+    &.card-White {
         background-color: #DDDDDD;
     }
 
-    &.bonus-Red {
+    &.card-Red {
         background-color: #E37A7A;
     }
 
-    &.bonus-Blue {
+    &.card-Blue {
         background-color: #6F83FF;
     }
 
-    &.bonus-Green {
+    &.card-Green {
         background-color: #7FCC7F;
     }
 
@@ -110,51 +110,7 @@ $max-width: 960px;
         flex-wrap: nowrap;
     }
 
-    .cost-gem {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        color: #333;
-        font-size: 1.2em;
-        border: 2px solid;
-        flex: 0 0 auto;
-        white-space: nowrap;
-        user-select: none;
-        cursor: default;
 
-        &.cost-gem-Black {
-            background-color: #000000;
-            border-color: #000000;
-            color: #fff;
-        }
-
-        &.cost-gem-White {
-            background-color: #FFFFFF;
-            border-color: #CCCCCC;
-        }
-
-        &.cost-gem-Red {
-            background-color: #FF0000;
-            border-color: #FF0000;
-            color: #fff;
-        }
-
-        &.cost-gem-Blue {
-            background-color: #0000FF;
-            border-color: #0000FF;
-            color: #fff;
-        }
-
-        &.cost-gem-Green {
-            background-color: #00AA00;
-            border-color: #00AA00;
-            color: #fff;
-        }
-    }
 }
 
 .cards {
@@ -178,32 +134,18 @@ $max-width: 960px;
         gap: 20px;
         flex-wrap: nowrap;
     }
+}
 
-    .gem {
-        flex: 0 0 auto;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+.gem {
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    user-select: none;
+    cursor: default;
 
-    .gem-circle {
-        flex: 0 0 50px;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 1.5em;
-        color: #fff;
-        border: 3px solid #CCCCCC;
-        box-sizing: border-box;
-        user-select: none;
-        cursor: default;
-    }
-
-    .gem-Gold {
+    &.gem-Gold {
         background-color: #FFD700;
         color: #000;
 
@@ -213,7 +155,7 @@ $max-width: 960px;
         }
     }
 
-    .gem-Black {
+    &.gem-Black {
         background-color: #000000;
         color: #fff;
 
@@ -223,7 +165,7 @@ $max-width: 960px;
         }
     }
 
-    .gem-White {
+    &.gem-White {
         background-color: #FFFFFF;
         color: #333;
 
@@ -233,7 +175,7 @@ $max-width: 960px;
         }
     }
 
-    .gem-Red {
+    &.gem-Red {
         background-color: #FF0000;
         color: #fff;
 
@@ -243,7 +185,7 @@ $max-width: 960px;
         }
     }
 
-    .gem-Blue {
+    &.gem-Blue {
         background-color: #0000FF;
         color: #fff;
 
@@ -253,8 +195,104 @@ $max-width: 960px;
         }
     }
 
-    .gem-Green {
+    &.gem-Green {
         background-color: #00AA00;
+        color: #fff;
+
+        &.empty {
+            background-color: #d9e6d9;
+            color: transparent;
+        }
+    }
+}
+
+.gem-big {
+    flex: 0 0 50px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.5em;
+    border: 3px solid #CCCCCC;
+    box-sizing: border-box;
+    user-select: none;
+    cursor: default;
+}
+
+.gem-small {
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2em;
+    border: 2px solid #999;
+    user-select: none;
+    cursor: default;
+}
+
+.bonus {
+    margin: 0 4px;
+    width: 24px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    box-sizing: border-box;
+    user-select: none;
+    cursor: default;
+
+    &.bonus-Black {
+        background-color: #6B6B6B;
+        color: #fff;
+
+        &.empty {
+            background-color: #c0c0c0;
+            color: transparent;
+        }
+    }
+
+    &.bonus-White {
+        background-color: #DDDDDD;
+        color: #333;
+
+        &.empty {
+            background-color: #e8e8e8;
+            color: transparent;
+        }
+    }
+
+    &.bonus-Red {
+        background-color: #E37A7A;
+        color: #fff;
+
+        &.empty {
+            background-color: #ffd9d9;
+            color: transparent;
+        }
+    }
+
+    &.bonus-Blue {
+        background-color: #6F83FF;
+        color: #fff;
+
+        &.empty {
+            background-color: #d9d9ff;
+            color: transparent;
+        }
+    }
+
+    &.bonus-Green {
+        background-color: #7FCC7F;
         color: #fff;
 
         &.empty {
@@ -270,84 +308,84 @@ $max-width: 960px;
         gap: 10px;
         flex-wrap: nowrap;
     }
+}
 
-    .noble {
-        width: 94px;
-        height: 94px;
-        padding: 10px;
-        border: 2px solid #8b5cf6;
-        border-radius: 8px;
-        display: block;
-        position: relative;
-        background-color: #faf5ff;
+.noble {
+    width: 94px;
+    height: 94px;
+    padding: 10px;
+    border: 2px solid #8b5cf6;
+    border-radius: 8px;
+    display: block;
+    position: relative;
+    background-color: #faf5ff;
+    box-sizing: border-box;
+
+    .noble-score {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        font-size: 2.2em;
+        font-weight: bold;
+        color: #8b5cf6;
+        user-select: none;
+        cursor: default;
+    }
+
+    .noble-criteria {
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        align-items: flex-end;
+    }
+
+    .criteria {
+        width: 18px;
+        height: 22px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.75em;
+        color: #fff;
+        border: 2px solid rgba(0, 0, 0, 0.12);
         box-sizing: border-box;
+        user-select: none;
+        cursor: default;
+    }
 
-        .noble-score {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            font-size: 2.2em;
-            font-weight: bold;
-            color: #8b5cf6;
-            user-select: none;
-            cursor: default;
-        }
+    .criteria-Black {
+        background-color: #000000;
+        color: #fff;
+        border-color: #000000
+    }
 
-        .noble-criteria {
-            position: absolute;
-            bottom: 8px;
-            right: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            align-items: flex-end;
-        }
+    .criteria-White {
+        background-color: #FFFFFF;
+        color: #333;
+        border-color: #CCCCCC
+    }
 
-        .criteria-square {
-            width: 18px;
-            height: 22px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 0.75em;
-            color: #fff;
-            border: 2px solid rgba(0, 0, 0, 0.12);
-            box-sizing: border-box;
-            user-select: none;
-            cursor: default;
-        }
+    .criteria-Red {
+        background-color: #FF0000;
+        color: #fff;
+        border-color: #FF0000
+    }
 
-        .criteria-square-Black {
-            background-color: #000000;
-            color: #fff;
-            border-color: #000000
-        }
+    .criteria-Blue {
+        background-color: #0000FF;
+        color: #fff;
+        border-color: #0000FF
+    }
 
-        .criteria-square-White {
-            background-color: #FFFFFF;
-            color: #333;
-            border-color: #CCCCCC
-        }
-
-        .criteria-square-Red {
-            background-color: #FF0000;
-            color: #fff;
-            border-color: #FF0000
-        }
-
-        .criteria-square-Blue {
-            background-color: #0000FF;
-            color: #fff;
-            border-color: #0000FF
-        }
-
-        .criteria-square-Green {
-            background-color: #00AA00;
-            color: #fff;
-            border-color: #00AA00
-        }
+    .criteria-Green {
+        background-color: #00AA00;
+        color: #fff;
+        border-color: #00AA00
     }
 }
 
@@ -496,142 +534,6 @@ $max-width: 960px;
                             font-size: 0.8rem;
                             color: #8b5cf6;
                             font-weight: 700;
-                        }
-                    }
-                }
-
-                .bonus {
-                    &.bonus-Black {
-                        background: #6B6B6B;
-                        color: #fff;
-
-                        &.empty {
-                            background: #c0c0c0;
-                            color: transparent;
-                        }
-                    }
-
-                    &.bonus-White {
-                        background: #DDDDDD;
-                        color: #333;
-
-                        &.empty {
-                            background: #e8e8e8;
-                            color: transparent;
-                        }
-                    }
-
-                    &.bonus-Red {
-                        background: #E37A7A;
-                        color: #fff;
-
-                        &.empty {
-                            background: #ffd9d9;
-                            color: transparent;
-                        }
-                    }
-
-                    &.bonus-Blue {
-                        background: #6F83FF;
-                        color: #fff;
-
-                        &.empty {
-                            background: #d9d9ff;
-                            color: transparent;
-                        }
-                    }
-
-                    &.bonus-Green {
-                        background: #7FCC7F;
-                        color: #fff;
-
-                        &.empty {
-                            background: #e6f0e6;
-                            color: transparent;
-                        }
-                    }
-                }
-
-                .gem-circle {
-                    flex: 0 0 28px;
-                    width: 28px;
-                    height: 28px;
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-weight: 700;
-                    font-size: 0.75rem;
-                    color: #fff;
-                    border: 2px solid #999;
-                    user-select: none;
-                    cursor: default;
-
-                    &.gem-Gold {
-                        background: #FFD700;
-                        color: #000;
-                        border-color: #d4a000;
-
-                        &.empty {
-                            background: #fff0b3;
-                            color: transparent;
-                            border-color: #f0e6c0;
-                        }
-                    }
-
-                    &.gem-Black {
-                        background: #000000;
-                        border-color: #333;
-
-                        &.empty {
-                            background: #c0c0c0;
-                            color: transparent;
-                            border-color: #d0d0d0;
-                        }
-                    }
-
-                    &.gem-White {
-                        background: #FFFFFF;
-                        color: #333;
-                        border-color: #ccc;
-
-                        &.empty {
-                            background: #f0f0f0;
-                            color: transparent;
-                            border-color: #e8e8e8;
-                        }
-                    }
-
-                    &.gem-Red {
-                        background: #FF0000;
-                        border-color: #cc0000;
-
-                        &.empty {
-                            background: #ffd9d9;
-                            color: transparent;
-                            border-color: #ffc9c9;
-                        }
-                    }
-
-                    &.gem-Blue {
-                        background: #0000FF;
-                        border-color: #0000cc;
-
-                        &.empty {
-                            background: #d9d9ff;
-                            color: transparent;
-                            border-color: #c9c9ff;
-                        }
-                    }
-
-                    &.gem-Green {
-                        background: #00AA00;
-                        border-color: #008800;
-
-                        &.empty {
-                            background: #d9e6d9;
-                            color: transparent;
-                            border-color: #c9dcc9;
                         }
                     }
                 }
@@ -919,99 +821,6 @@ $max-width: 960px;
                         user-select: none;
                         cursor: default;
                         flex-shrink: 0;
-
-                        &.bonus-Black {
-                            background: #6B6B6B;
-                            color: #fff;
-
-                            &.empty {
-                                background: #c0c0c0;
-                                color: transparent;
-                            }
-                        }
-
-                        &.bonus-White {
-                            background: #DDDDDD;
-                            color: #333;
-
-                            &.empty {
-                                background: #e8e8e8;
-                                color: transparent;
-                            }
-                        }
-
-                        &.bonus-Red {
-                            background: #E37A7A;
-                            color: #fff;
-
-                            &.empty {
-                                background: #ffd9d9;
-                                color: transparent;
-                            }
-                        }
-
-                        &.bonus-Blue {
-                            background: #6F83FF;
-                            color: #fff;
-
-                            &.empty {
-                                background: #d9d9ff;
-                                color: transparent;
-                            }
-                        }
-
-                        &.bonus-Green {
-                            background: #7FCC7F;
-                            color: #fff;
-
-                            &.empty {
-                                background: #d9e6d9;
-                                color: transparent;
-                            }
-                        }
-                    }
-
-                    .cost-display {
-                        width: 28px;
-                        height: 28px;
-                        border-radius: 50%;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-weight: bold;
-                        color: #333;
-                        font-size: 1.2em;
-                        border: 2px solid;
-                        flex-shrink: 0;
-
-                        &.cost-gem-Black {
-                            background-color: #000000;
-                            border-color: #000000;
-                            color: #fff;
-                        }
-
-                        &.cost-gem-White {
-                            background-color: #FFFFFF;
-                            border-color: #CCCCCC;
-                        }
-
-                        &.cost-gem-Red {
-                            background-color: #FF0000;
-                            border-color: #FF0000;
-                            color: #fff;
-                        }
-
-                        &.cost-gem-Blue {
-                            background-color: #0000FF;
-                            border-color: #0000FF;
-                            color: #fff;
-                        }
-
-                        &.cost-gem-Green {
-                            background-color: #00AA00;
-                            border-color: #00AA00;
-                            color: #fff;
-                        }
                     }
 
                     .slot-group {

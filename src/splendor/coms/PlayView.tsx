@@ -90,7 +90,7 @@ const GemSmall: Com<{ colorIdx: number, count?: number, onclick?: (idx: number) 
     { colorIdx, count, onclick },
 ) => {
     return <div
-        className={`gem gem-small gem-${GemType[colorIdx]} ${count === undefined ? 'empty' : ''}`}
+        className={`gem gem-small gem-${GemType[colorIdx]} ${!count ? 'empty' : ''}`}
         onclick={onclick ? () => onclick!(colorIdx) : undefined}
     >
         {count ?? ''}
@@ -297,9 +297,9 @@ const TakingGemsOverlay: Com<{ game: Game, gameState: GameState, player: Player 
         <div className='gems-and-actions'>
             <div className='gem-slots'>
                 {[0, 1, 2].map((idx) => {
-                    const onPutBackGem = (idx: number) => {
+                    const onPutBackGem = (gemIdx: number) => {
                         takingGems.splice(idx, 1)
-                        takingState.gems[gem]++
+                        takingState.gems[gemIdx]++
                     }
                     const gem = takingGems[idx]
                     return gem ? (

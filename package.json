@@ -16,10 +16,10 @@
     "dts-bundle-generator": "^9.5.1",
     "eslint": "^9.21.0",
     "eslint-plugin-import": "^2.31.0",
-    "ezh-trans": "^0.2.1",
+    "ezh-trans": "^0.2.2",
     "globals": "^16.5.0",
-    "log-class": "^1.0.2",
-    "minify-ts": "^1.2.4",
+    "log-class": "^1.0.3",
+    "minify-ts": "^1.2.8",
     "sass": "^1.86.0",
     "sass-loader": "^16.0.5",
     "style-loader": "^4.0.0",
@@ -30,9 +30,9 @@
     "webpack-dev-server": "^5.2.0"
   },
   "dependencies": {
-    "ezh": "file://./src/ezh",
-    "ezh-model": "file://./src/ezh-model",
-    "justrun-loader": "file://./src/justrun-loader",
-    "justrun-ws": "file://./src/justrun-ws"
+    "ezh": "^0.3.1",
+    "ezh-model": "^0.3.2",
+    "justrun-loader": "^0.3.8",
+    "justrun-ws": "^0.3.7"
   }
 }

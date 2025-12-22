@@ -215,7 +215,7 @@ const TestPage1: Com = () => {
     </div>
 }
 
-const TestPage2: Com<{ name: string, age: number }> = ({ name, age }) => {
+const TestPage2: Com<{ name: string, age: string }> = ({ name, age }) => {
     return <div>
         <p>Test page 2</p>
         <p>Name: {name}</p>
@@ -224,8 +224,8 @@ const TestPage2: Com<{ name: string, age: number }> = ({ name, age }) => {
 }
 
 const routeMap = {
-    testPage1: route(TestPage1, '/', false),
-    testPage2: route(TestPage2, '/test2/:name/:age', false),
+    testPage1: route(TestPage1, '/', true),
+    testPage2: route(TestPage2, '/test2/:name/:age', true),
 }
 
 const rootElement = document.getElementById('root')

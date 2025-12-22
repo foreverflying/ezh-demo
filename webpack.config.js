@@ -37,6 +37,12 @@ module.exports = {
     //     outputModule: true,
     // },
     mode: mode,
+    // stats: {
+    //     errorDetails: true,
+    //     errors: true,
+    //     errorStack: true,
+    //     moduleTrace: true,
+    // },
     output: {
         chunkLoading: false,
         wasmLoading: false,

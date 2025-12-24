@@ -30,8 +30,8 @@
     "webpack-dev-server": "^5.2.0"
   },
   "dependencies": {
-    "ezh": "^0.3.1",
-    "ezh-model": "^0.3.2",
+    "ezh": "^0.3.3",
+    "ezh-model": "^0.3.3",
     "justrun-loader": "^0.3.8",
     "justrun-ws": "^0.3.7"
   }

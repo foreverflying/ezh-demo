@@ -50,26 +50,6 @@ $max-width: 960px;
     flex-wrap: nowrap;
     overflow: hidden;
 
-    &.card-Black {
-        background-color: #6B6B6B;
-    }
-
-    &.card-White {
-        background-color: #DDDDDD;
-    }
-
-    &.card-Red {
-        background-color: #E37A7A;
-    }
-
-    &.card-Blue {
-        background-color: #6F83FF;
-    }
-
-    &.card-Green {
-        background-color: #7FCC7F;
-    }
-
     .card-left {
         display: flex;
         flex-direction: column;
@@ -109,8 +89,26 @@ $max-width: 960px;
         gap: 4px;
         flex-wrap: nowrap;
     }
+}
 
+.card-Black {
+    background-color: #6B6B6B;
+}
 
+.card-White {
+    background-color: #DDDDDD;
+}
+
+.card-Red {
+    background-color: #E37A7A;
+}
+
+.card-Blue {
+    background-color: #6F83FF;
+}
+
+.card-Green {
+    background-color: #7FCC7F;
 }
 
 .cards {
@@ -232,7 +230,7 @@ $max-width: 960px;
     justify-content: center;
     font-weight: 700;
     font-size: 1.2em;
-    border: 2px solid #999;
+    border: 2px solid rgba(0, 0, 0, 0.12);
     user-select: none;
     cursor: default;
 }
@@ -247,6 +245,7 @@ $max-width: 960px;
     border-radius: 6px;
     font-weight: 600;
     font-size: 0.85rem;
+    border: 2px solid rgba(0, 0, 0, 0.12);
     box-sizing: border-box;
     user-select: none;
     cursor: default;
@@ -755,6 +754,7 @@ $max-width: 960px;
     }
 
     .overlay-card-area {
+        margin-top: 8px;
         display: flex;
         justify-content: flex-start;
         align-items: flex-start;
@@ -767,8 +767,8 @@ $max-width: 960px;
             flex-shrink: 0;
         }
 
-        .buy-info {
-            background: #e8e8e8;
+        .buy-card {
+            margin-right: 8px;
             border-radius: 6px;
             padding: 0;
             padding-bottom: 0;
@@ -778,20 +778,18 @@ $max-width: 960px;
             justify-content: flex-end;
             align-items: flex-start;
             flex-shrink: 0;
-            width: fit-content;
+            width: 380px;
             box-sizing: border-box;
             gap: 4px;
 
-            .buy-info-lines {
+            .buy-card-lines {
                 display: flex;
                 flex-direction: column;
                 gap: 4px;
                 width: 100%;
-                padding-left: 8px;
-                padding-right: 4px;
-                padding-bottom: 11px;
+                padding: 0 8px 11px 8px;
 
-                .buy-card-cost-line {
+                .pay-plan {
                     display: flex;
                     align-items: center;
                     gap: 4px;
@@ -800,27 +798,11 @@ $max-width: 960px;
 
                     .operator {
                         font-weight: bold;
-                        color: #666;
+                        color: #000;
                         font-size: 0.9rem;
                         flex-shrink: 0;
                         min-width: 12px;
                         text-align: center;
-                    }
-
-                    .slot {
-                        margin: 0;
-                        width: 24px;
-                        height: 32px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        border-radius: 6px;
-                        font-weight: 600;
-                        font-size: 0.85rem;
-                        box-sizing: border-box;
-                        user-select: none;
-                        cursor: default;
-                        flex-shrink: 0;
                     }
 
                     .slot-group {
@@ -828,18 +810,28 @@ $max-width: 960px;
                         gap: 4px;
                         flex-shrink: 0;
 
-                        .slot-box {
+                        .slot {
                             width: 28px;
                             height: 28px;
-                            border: 2px dashed #999;
                             border-radius: 50%;
                             background: rgba(0, 0, 0, 0.05);
                             display: flex;
                             align-items: center;
                             justify-content: center;
 
+                            &.filling {
+                                border: 2px dashed $accent;
+                                background: rgba(255, 255, 255, 0.15);
+                            }
+
+                            &.full {
+                                background: transparent;
+                                font-size: 1.4rem;
+                                color: #27bc27;
+                            }
+
                             &.empty {
-                                background: rgba(0, 0, 0, 0.05);
+                                border: 2px dashed #999;
                             }
                         }
                     }

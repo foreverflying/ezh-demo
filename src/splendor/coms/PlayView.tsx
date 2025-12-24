@@ -11,11 +11,29 @@ import './PlayView.scss'
 type GameState = {
     selectedPlayer: number
     userPlayerId?: string
-    takingGems?: number[]
-    takingCard?: {
-        cardId: string
-        gems: number[]
-    }
+    takingGem?: number
+    takingCard?: string
+}
+
+type PayGem = {
+    colorIdx: number
+    count: number
+}
+
+type PayGemPlan = {
+    gemIdx: number
+    cost: number
+    bonus: number
+    needed: number
+    gems?: PayGem[]
+}
+
+type TakingCardState = {
+    cardId: string
+    playerGems: number[]
+    gameGems: number[]
+    fillingPos: number
+    plans: PayGemPlan[]
 }
 
 const validateTakingGems = (gameGems: number[], playerGems: number[], taking: number[]): number => {
@@ -261,45 +279,46 @@ const PlayersPanel: Com<{ game: Game, state: GameState }> = ({ game, state }) =>
 const TakingGemsOverlay: Com<{ game: Game, gameState: GameState, player: Player }> = (
     { game, gameState, player },
 ) => {
-    const takingGems = gameState.takingGems!
     const takingState = useState(
         {
-            gems: game.gems,
+            gameGems: game.gems,
+            takingGems: [gameState.takingGem!],
         },
         (ver, state) => {
             if (ver === 1) {
-                state.gems = game.gems
-                for (const gemIdx of takingGems) {
-                    state.gems[gemIdx]--
+                state.gameGems = game.gems
+                for (const gemIdx of state.takingGems) {
+                    state.gameGems[gemIdx]--
                 }
             }
         },
     )
 
+    const takingGems = takingState.takingGems
     const shouldDisableTake = validateTakingGems(game.gems, player.gems, takingGems) !== 1
     const onPickGem = (idx: number) => {
         if (validateTakingGems(game.gems, player.gems, [...takingGems, idx]) < 0) {
             return
         }
         takingGems.push(idx)
-        takingState.gems[idx]--
+        takingState.gameGems[idx]--
     }
     const onTakeGem = async () => {
         if (await client.takeGems(game.gameId, takingGems)) {
-            gameState.takingGems = undefined
+            gameState.takingGem = undefined
         }
     }
 
     return <div className='taking-gems'>
         <div className='current-gems'>
-            <GemRow gems={takingState.gems} noOpOnGold={true} onClickGem={onPickGem} />
+            <GemRow gems={takingState.gameGems} noOpOnGold={true} onClickGem={onPickGem} />
         </div>
         <div className='gems-and-actions'>
             <div className='gem-slots'>
                 {[0, 1, 2].map((idx) => {
                     const onPutBackGem = (gemIdx: number) => {
                         takingGems.splice(idx, 1)
-                        takingState.gems[gemIdx]++
+                        takingState.gameGems[gemIdx]++
                     }
                     const gem = takingGems[idx]
                     return gem ? (
@@ -314,34 +333,60 @@ const TakingGemsOverlay: Com<{ game: Game, gameState: GameState, player: Player 
                     Take
                 </button>
                 <button className='cancel-btn' onclick={() => {
-                    gameState.takingGems = undefined
+                    gameState.takingGem = undefined
                 }}>Cancel</button>
             </div>
         </div>
     </div>
 }
 
-const BuyCardCostLine: Com<{ cost: number, count: number }> = ({ cost, count }) => {
-    return <div className='buy-card-cost-line'>
-        <div className='operator'>−</div>
-        <Bonus colorIdx={cost} count={count} />
+const PayGemPlanView: Com<{ state: PayGemPlan, filling: boolean, onClickGem: (gemIdx: number) => void }> = (
+    { state, filling, onClickGem },
+) => {
+    const { cost, bonus, gemIdx, needed, gems } = state
+    return <div className='pay-plan'>
+        <div className='operator'>&minus;</div>
+        <Bonus colorIdx={gemIdx} count={bonus} />
         <div className='operator'>=</div>
-        <GemSmall colorIdx={cost} count={count} />
+        <GemSmall colorIdx={gemIdx} count={cost - bonus} />
         <div className='operator'>:</div>
         <div className='slot-group'>
-            <div className='slot-box empty'></div>
-            <div className='slot-box empty'></div>
+            {needed ? (
+                <div className={`slot ${filling ? 'filling' : 'empty'}`}></div>
+            ) : (
+                <div className='slot full'>&#x2714;</div>
+            )}
+            {!gems ? null : gems.map((gem) => (
+                <div key={gem.colorIdx}>
+                    <GemSmall colorIdx={gem.colorIdx} count={gem.count} onclick={() => onClickGem(gem.colorIdx)} />
+                </div>
+            ))}
         </div>
     </div>
 }
 
-const BuyCardInfo: Com<{ cardId: string, selectedPlayer: Player }> = ({ cardId, selectedPlayer }) => {
-    const card = client.loadModel(Card, { id: cardId })
-    return !card ? null : <div className='buy-info'>
-        <div className='buy-info-lines'>
-            {card.cost.map((count, idx) => !count ? null : (
-                <BuyCardCostLine key={idx} cost={idx + 1} count={selectedPlayer.bonuses[idx + 1]} />
-            ))}
+const BuyCardPlanView: Com<{ card: Card, state: TakingCardState }> = ({ card, state }) => {
+    const { plans, gameGems, playerGems, fillingPos } = state
+    return <div className={`buy-card card-${GemType[card.bonus]}`}>
+        <div className='buy-card-lines'>
+            {plans.map((plan, pos) => {
+                const filling = fillingPos === pos
+                const onWithdrawGem = (gemIdx: number) => {
+                    const gems = plan.gems!
+                    const gem = gems.find((g) => g.colorIdx === gemIdx)!
+                    const value = gemIdx === GemType.Gold ? 2 : gemIdx === plan.gemIdx ? 2 : 1
+                    plan.needed += value
+                    playerGems[gemIdx]++
+                    gameGems[gemIdx]--
+                    if (!--gem.count) {
+                        plan.gems = gems.filter((g) => g !== gem)
+                    }
+                    if (fillingPos < 0 || fillingPos > pos) {
+                        state.fillingPos = pos
+                    }
+                }
+                return <PayGemPlanView key={plan.gemIdx} state={plan} filling={filling} onClickGem={onWithdrawGem} />
+            })}
         </div>
     </div>
 }
@@ -349,29 +394,146 @@ const BuyCardInfo: Com<{ cardId: string, selectedPlayer: Player }> = ({ cardId, 
 const TakingCardOverlay: Com<{ game: Game, gameState: GameState, player: Player }> = (
     { game, gameState, player },
 ) => {
-    const takingCard = gameState.takingCard!
-    const selectedPlayerGems = player.gems
+    const cardId = gameState.takingCard!
+    const card = client.loadModel(Card, { id: cardId })
+    if (!card) {
+        return null
+    }
+    const state = useState<TakingCardState>(
+        {
+            cardId,
+            playerGems: player.gems,
+            gameGems: game.gems,
+            fillingPos: 0,
+            plans: [],
+        },
+        (ver, state) => {
+            if (ver === 1) {
+                state.cardId = cardId
+                state.playerGems = player.gems
+                state.gameGems = game.gems
+                state.fillingPos = -1
+                state.plans = []
+                const { plans } = state
+                for (let idx = 0; idx < card.cost.length; idx++) {
+                    const cost = card.cost[idx]
+                    if (cost) {
+                        const gemIdx = idx + 1
+                        let gems: PayGem[] | undefined = undefined
+                        const bonus = player.bonuses[gemIdx]
+                        let needed = cost - bonus
+                        if (needed < 0) {
+                            needed = 0
+                        } else if (needed) {
+                            let use = state.playerGems[gemIdx]
+                            if (use > needed) {
+                                use = needed
+                            }
+                            if (use) {
+                                needed -= use
+                                gems = [{ colorIdx: gemIdx, count: use }]
+                                state.playerGems[gemIdx] -= use
+                                state.gameGems[gemIdx] += use
+                            }
+                        }
+                        const pos = plans.push({
+                            gemIdx,
+                            cost,
+                            bonus,
+                            needed: needed * 2,
+                            gems,
+                        })
+                        if (state.fillingPos < 0 && needed) {
+                            state.fillingPos = pos - 1
+                        }
+                    }
+                }
+            }
+        },
+    )
+    const { playerGems, gameGems, plans } = state
+
+    const onPayGem = (gemIdx: number) => {
+        let { fillingPos } = state
+        const plan = plans[fillingPos]
+        playerGems[gemIdx]--
+        gameGems[gemIdx]++
+        let { gems } = plan
+        if (!gems) {
+            plan.gems = []
+            gems = plan.gems
+        }
+        let gem = gems.find((g) => g.colorIdx === gemIdx)
+        if (!gem) {
+            gem = { colorIdx: gemIdx, count: 1 }
+            if (gems.length === 0) {
+                gems.push(gem)
+            } else if (gemIdx === GemType.Gold) {
+                gems.unshift(gem)
+            } else if (gemIdx === plan.gemIdx) {
+                if (gems[0].colorIdx === GemType.Gold) {
+                    gems.splice(1, 0, gem)
+                } else {
+                    gems.unshift(gem)
+                }
+            } else {
+                gems.push(gem)
+            }
+        } else {
+            gem.count++
+        }
+        let value = gemIdx === GemType.Gold ? 2 : gemIdx === plan.gemIdx ? 2 : 1
+        plan.needed -= value
+        if (plan.needed > 0) {
+            return
+        }
+        if (plan.needed < 0) {
+            let i = gems.length
+            gem = gems[--i]
+            gemIdx = gem.colorIdx
+            value = gemIdx === plan.gemIdx ? 2 : 1
+            do {
+                playerGems[gemIdx]++
+                gameGems[gemIdx]--
+                plan.needed += value
+                if (--gem.count === 0) {
+                    gems.pop()
+                    gem = gems[--i]
+                    gemIdx = gem.colorIdx
+                    value = gemIdx === plan.gemIdx ? 2 : 1
+                }
+            } while (plan.needed < 0)
+        }
+        while (++fillingPos < plans.length) {
+            const nextPlan = plans[fillingPos]
+            if (nextPlan.needed > 0) {
+                state.fillingPos = fillingPos
+                return
+            }
+        }
+        state.fillingPos = -1
+    }
 
     return <div className='taking-card'>
         <div className='overlay-top-gems'>
-            <GemRow gems={game.gems} />
+            <GemRow gems={gameGems} />
         </div>
         <div className='overlay-card-area'>
             <div className='card-display'>
-                <CardView cardId={takingCard.cardId} />
+                <CardView cardId={cardId} />
             </div>
-            <div className='buy-info'>
-                <BuyCardInfo cardId={takingCard.cardId} selectedPlayer={player} />
+            <div className='buy-card'>
+                <BuyCardPlanView card={card} state={state} />
             </div>
         </div>
         <div className='overlay-bottom-gems'>
-            <GemRow gems={selectedPlayerGems} />
+            <GemRow gems={playerGems} onClickGem={state.fillingPos >= 0 ? onPayGem : undefined} />
         </div>
         <div className='taking-actions'>
             <button
                 className='take-btn'
                 onclick={async () => {
-                    if (await client.buyCard(game.gameId, takingCard.cardId, takingCard.gems)) {
+                    if (await client.buyCard(game.gameId, cardId, [])) {
                         gameState.takingCard = undefined
                     }
                 }}
@@ -394,7 +556,7 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
     const state = useState<GameState>({
         userPlayerId: user.playerId,
         selectedPlayer: game.current,
-        takingGems: undefined,
+        takingGem: undefined,
         takingCard: undefined,
     })
 
@@ -406,12 +568,12 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
     let onClickGem: ((idx: number) => void) | undefined = undefined
     let onClickCard: ((cardId: string) => void) | undefined = undefined
     const isOperating = game.players[game.current] === user.playerId
-    if (isOperating && !state.takingGems && !state.takingCard) {
-        onClickGem = (idx: number) => {
-            state.takingGems = [idx]
+    if (isOperating && !state.takingGem && !state.takingCard) {
+        onClickGem = (gemIdx: number) => {
+            state.takingGem = gemIdx
         }
         onClickCard = (cardId: string) => {
-            state.takingCard = { cardId, gems: [0, 0, 0, 0, 0, 0] }
+            state.takingCard = cardId
         }
     }
 
@@ -425,7 +587,7 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
                     </div>
                     <div className='gems'>
                         <GemRow gems={gems} noOpOnGold={true} onClickGem={onClickGem} />
-                        {state.takingGems && <TakingGemsOverlay game={game} gameState={state} player={currPlayer} />}
+                        {state.takingGem && <TakingGemsOverlay game={game} gameState={state} player={currPlayer} />}
                         {state.takingCard && <TakingCardOverlay game={game} gameState={state} player={currPlayer} />}
                     </div>
                 </div>

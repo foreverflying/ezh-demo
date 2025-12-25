@@ -36,8 +36,8 @@ const authProvider = new JustrunAuthProvider(
 
 const wsClient = createNumPkgTypeClient(
     '',
-    new TimeoutMonitor(0, 3, 6),
-    // new TimeoutMonitor(2000, 3, 6),
+    // new TimeoutMonitor(0, 3, 6),
+    new TimeoutMonitor(10000, 3, 6),
 )
 wsClient.enableAuthenticate(0xff00, authProvider)
 wsClient.registerError(0x03, CommonError)
@@ -151,6 +151,13 @@ export const client = {
             gameId,
             cardId,
             gems,
+        }))
+    },
+    async reserveCard(gameId: string, cardId: string) {
+        return sendRequest(new ReserveCardRequest({
+            userId: authState.cid,
+            gameId,
+            cardId,
         }))
     },
 }

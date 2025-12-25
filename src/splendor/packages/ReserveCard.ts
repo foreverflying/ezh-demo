@@ -3,7 +3,7 @@ import { DoneResp, JsonRequest } from '../defPackage'
 export type ReserveCardReq = {
     userId: string
     gameId: string
-    cardIndex: number
+    cardId: string
 }
 
 export class ReserveCardRequest extends JsonRequest<ReserveCardReq, DoneResp> { }

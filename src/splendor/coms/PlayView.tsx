@@ -76,7 +76,7 @@ const CardView: Com<{ cardId: string, onclick?: (id: string) => void }> = ({ car
         </div>
         <div className='card-right'>
             <div className='card-costs'>
-                {card.cost.map((count, idx) => !count ? null : (
+                {card.costs.map((count, idx) => !count ? null : (
                     <GemSmall key={idx} colorIdx={idx + 1} count={count} />
                 ))}
             </div>
@@ -182,7 +182,7 @@ const PlayerTab: Com<{ game: Game, players: Player[], state: GameState }> = ({ g
                     className={className}
                     onclick={() => state.selectedPlayer = idx}
                 >
-                    {player.name}
+                    {player.name}: {player.score}
                 </div>
             )
         })}
@@ -193,14 +193,10 @@ const PlayerNoble: Com<{ nobleId?: string }> = ({ nobleId }) => {
     if (nobleId) {
         const noble = client.loadModel(Noble, { id: nobleId })
         if (noble) {
-            return <div className='slot noble-slot'>
-                <div className='noble-score'>{noble.score}</div>
-            </div>
+            return <div className='player-noble'>{noble.score}</div>
         }
     }
-    return <div className='slot noble-slot'>
-        <span className='slot-empty'></span>
-    </div>
+    return <div className='player-noble empty' />
 }
 
 const PlayerBonusSet: Com<{ bonuses: number[] }> = ({ bonuses }) => {
@@ -219,27 +215,30 @@ const PlayerGemSet: Com<{ gems: number[] }> = ({ gems }) => {
     </div>
 }
 
-const PlayerReservedCard: Com<{ cardId: string }> = ({ cardId }) => {
-    return <div className='player-right'>
-        {() => {
-            const card = client.loadModel(Card, { id: cardId })
-            return !card ? null : (
-                <div className='reserved-card'>
-                    <div className='reserved-score'>{card.score || ''}</div>
-                    <div className='reserved-costs'>
-                        {card.cost.map((count, costIdx) => !count ? null : (
-                            <div key={costIdx} className={`cost-item cost-${GemType[costIdx + 1]}`}>
-                                {count}
-                            </div>
-                        ))}
-                    </div>
+const PlayerReservedCard: Com<{ cardId: string, onClickCard?: (cardId: string) => void }> = (
+    { cardId, onClickCard },
+) => {
+    return (() => {
+        const card = client.loadModel(Card, { id: cardId })
+        return !card ? null : (
+            <div
+                className={`reserved-card card-${GemType[card.bonus]}${onClickCard ? ' operate' : ''}`}
+                onclick={onClickCard ? () => onClickCard(cardId) : undefined}
+            >
+                <div className='reserved-score'>{card.score || ''}</div>
+                <div className='reserved-cost'>
+                    {card.costs.map((count, costIdx) => !count ? null : (
+                        <GemSmall key={costIdx} colorIdx={costIdx + 1} count={count} />
+                    ))}
                 </div>
-            )
-        }}
-    </div>
+            </div>
+        )
+    })()
 }
 
-const PlayersPanel: Com<{ game: Game, state: GameState }> = ({ game, state }) => {
+const PlayersPanel: Com<{ game: Game, state: GameState, onClickCard?: (cardId: string) => void }> = (
+    { game, state, onClickCard },
+) => {
     const players: Player[] = []
     for (const playerId of game.players) {
         const player = client.loadModel(Player, { playerId })
@@ -253,7 +252,7 @@ const PlayersPanel: Com<{ game: Game, state: GameState }> = ({ game, state }) =>
     return <div className='players-panel'>
         <PlayerTab game={game} players={players} state={state} />
         <div className='player-detail'>
-            <div className='player-left'>
+            <div className='player-box'>
                 <div className='player-row'>
                     <PlayerNoble nobleId={player.noble} />
                     <PlayerBonusSet bonuses={player.bonuses} />
@@ -262,13 +261,13 @@ const PlayersPanel: Com<{ game: Game, state: GameState }> = ({ game, state }) =>
                     <PlayerGemSet gems={player.gems} />
                 </div>
                 <div className='player-row'>
-                    <div className='row-empty'></div>
+                    <div className='row-empty' />
                 </div>
             </div>
-            <div className='player-center'>
+            <div className='player-box'>
                 {player.reserved.map((cardId, idx) => {
-                    return <div key={idx} className='player-row'>
-                        <PlayerReservedCard cardId={cardId} />
+                    return <div key={idx}>
+                        <PlayerReservedCard cardId={cardId} onClickCard={onClickCard} />
                     </div>
                 })}
             </div>
@@ -324,7 +323,7 @@ const TakingGemsOverlay: Com<{ game: Game, gameState: GameState, player: Player 
                     return gem ? (
                         <GemBig key={idx} colorIdx={gem} count={1} onclick={onPutBackGem} />
                     ) : (
-                        <div key={idx} className='gem-slot empty'></div>
+                        <div key={idx} className='gem-slot empty' />
                     )
                 })}
             </div>
@@ -344,15 +343,16 @@ const PayGemPlanView: Com<{ state: PayGemPlan, filling: boolean, onClickGem: (ge
     { state, filling, onClickGem },
 ) => {
     const { cost, bonus, gemIdx, needed, gems } = state
+    const pay = cost - bonus
     return <div className='pay-plan'>
         <div className='operator'>&minus;</div>
         <Bonus colorIdx={gemIdx} count={bonus} />
         <div className='operator'>=</div>
-        <GemSmall colorIdx={gemIdx} count={cost - bonus} />
+        <GemSmall colorIdx={gemIdx} count={pay < 0 ? 0 : pay} />
         <div className='operator'>:</div>
         <div className='slot-group'>
             {needed ? (
-                <div className={`slot ${filling ? 'filling' : 'empty'}`}></div>
+                <div className={`slot ${filling ? 'filling' : 'empty'}`} />
             ) : (
                 <div className='slot full'>&#x2714;</div>
             )}
@@ -415,8 +415,8 @@ const TakingCardOverlay: Com<{ game: Game, gameState: GameState, player: Player 
                 state.fillingPos = -1
                 state.plans = []
                 const { plans } = state
-                for (let idx = 0; idx < card.cost.length; idx++) {
-                    const cost = card.cost[idx]
+                for (let idx = 0; idx < card.costs.length; idx++) {
+                    const cost = card.costs[idx]
                     if (cost) {
                         const gemIdx = idx + 1
                         let gems: PayGem[] | undefined = undefined
@@ -452,6 +452,8 @@ const TakingCardOverlay: Com<{ game: Game, gameState: GameState, player: Player 
         },
     )
     const { playerGems, gameGems, plans } = state
+    const { reserved } = player
+    const canReserve = reserved ? reserved.length < 3 && !reserved.includes(cardId) : true
 
     const onPayGem = (gemIdx: number) => {
         let { fillingPos } = state
@@ -514,8 +516,28 @@ const TakingCardOverlay: Com<{ game: Game, gameState: GameState, player: Player 
         state.fillingPos = -1
     }
 
+    const onBuyCard = async () => {
+        const payGems = [0, 0, 0, 0, 0, 0]
+        for (const plan of plans) {
+            if (plan.gems) {
+                for (const { colorIdx, count } of plan.gems) {
+                    payGems[colorIdx] = count
+                }
+            }
+        }
+        if (await client.buyCard(game.gameId, cardId, payGems)) {
+            gameState.takingCard = undefined
+        }
+    }
+
+    const onReserveCard = async () => {
+        if (await client.reserveCard(game.gameId, cardId)) {
+            gameState.takingCard = undefined
+        }
+    }
+
     return <div className='taking-card'>
-        <div className='overlay-top-gems'>
+        <div className='overlay-gems'>
             <GemRow gems={gameGems} />
         </div>
         <div className='overlay-card-area'>
@@ -526,19 +548,15 @@ const TakingCardOverlay: Com<{ game: Game, gameState: GameState, player: Player 
                 <BuyCardPlanView card={card} state={state} />
             </div>
         </div>
-        <div className='overlay-bottom-gems'>
+        <div className='overlay-gems'>
             <GemRow gems={playerGems} onClickGem={state.fillingPos >= 0 ? onPayGem : undefined} />
         </div>
         <div className='taking-actions'>
-            <button
-                className='take-btn'
-                onclick={async () => {
-                    if (await client.buyCard(game.gameId, cardId, [])) {
-                        gameState.takingCard = undefined
-                    }
-                }}
-            >
-                Take
+            <button className='reserve-btn' disabled={!canReserve} onclick={onReserveCard} >
+                Reserve
+            </button>
+            <button className='take-btn' disabled={state.fillingPos >= 0} onclick={onBuyCard} >
+                Purchase
             </button>
             <button className='cancel-btn' onclick={() => {
                 gameState.takingCard = undefined
@@ -605,7 +623,11 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
 
             {/* Players Section */}
             <div className='players'>
-                <PlayersPanel game={game} state={state} />
+                <PlayersPanel
+                    game={game}
+                    state={state}
+                    onClickCard={selectedPlayer === currPlayer ? onClickCard : undefined}
+                />
             </div>
         </div>
     </div>

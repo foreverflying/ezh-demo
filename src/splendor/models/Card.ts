@@ -15,7 +15,7 @@ export class Card extends Model<Card> {
     declare category: CardCategory
 
     @decArray
-    declare cost: number[]
+    declare costs: number[]
 
     @decField
     declare score: number

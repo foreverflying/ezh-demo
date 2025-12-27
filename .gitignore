@@ -4,6 +4,8 @@ node_modules
 .initiated
 .VSCodeCounter
 
+*.env
+
 /build
 /dist
 /out

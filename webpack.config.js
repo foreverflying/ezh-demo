@@ -1,7 +1,20 @@
 /* eslint-disable no-undef */
 /* eslint-disable @typescript-eslint/no-require-imports */
 const path = require('path')
+const dotenv = require('dotenv')
 const { ezhTransformer } = require('ezh-trans')
+
+const envFile = process.env.NODE_ENV ? `${process.env.NODE_ENV}.env` : '.env'
+dotenv.config({ path: path.resolve(__dirname, 'env', envFile) })
+
+const httpsCert = process.env.HTTPS_CERT
+const httpsKey = process.env.HTTPS_KEY
+
+const serverType = httpsCert && httpsKey ? 'https' : 'http'
+const serverOptions = serverType === 'http' ? undefined : {
+    cert: httpsCert.replace(/\\n/g, '\n'),
+    key: httpsKey.replace(/\\n/g, '\n'),
+}
 
 let mode = 'production'
 mode = 'development'
@@ -79,12 +92,23 @@ module.exports = {
     devServer: {
         hot: false,
         historyApiFallback: true,
+        allowedHosts: 'all',
         devMiddleware: {
             writeToDisk: true,
         },
         static: {
             directory: path.join(__dirname, static),
             publicPath: '/',
+        },
+        proxy: [{
+            context: ['/api'],
+            target: 'http://host.docker.internal:8088',
+            changeOrigin: 'http://localhost:8088',
+            ws: true,
+        }],
+        server: {
+            type: serverType,
+            options: serverOptions,
         },
         port: 8080,
     },

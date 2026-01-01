@@ -1,9 +1,11 @@
 import 'ezh/debug-check'
-import { $ezh, Com, route, Router } from 'ezh'
+import { $ezh, Com, configGC, route, Router } from 'ezh'
 import { ConnErrorView } from './coms/ConnErrorView'
 import { MainView } from './coms/MainView'
 import { GameView } from './coms/GameView'
 import { client } from './client'
+
+configGC(10, 2000)
 
 const routeMap = {
     connErr: route(ConnErrorView, '/conn-err?returnTo', true),

@@ -1,12 +1,10 @@
 @use "sass:color";
-$bg-top: #0f172a;
-$bg-bottom: #0b1220;
 $card-bg: rgba(255, 255, 255, 0.96);
 $primary: #1976d2;
 $success: #43a047;
 $muted: #6b7280;
 $danger: #e53e3e;
-$max-width: 960px;
+$max-width: 60rem;
 
 .prepare {
     min-height: 100vh;
@@ -14,26 +12,24 @@ $max-width: 960px;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 18px;
-    padding: 36px 18px;
+    gap: 1.125rem;
+    padding: 36px 1.125rem;
     box-sizing: border-box;
-    background: linear-gradient(180deg, $bg-top 0%, $bg-bottom 100%);
     color: #0b1220;
 
-    .header {
-        display: flex;
-        width: 100%;
-        max-width: $max-width;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
+    .title {
+        font-size: 2.4rem;
+        color: #fff;
+        margin: 0;
+        letter-spacing: 1px;
+        text-shadow: 0 0.25rem 1.125rem rgba(2, 6, 23, 0.6);
+    }
 
-        .header-title {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #fff;
-            margin: 0;
-        }
+    .subtitle {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 0.98rem;
+        opacity: 0.9;
     }
 
     /* Card-like sections */
@@ -42,21 +38,21 @@ $max-width: 960px;
         width: 100%;
         max-width: 360px;
         background: $card-bg;
-        border-radius: 12px;
-        padding: 14px 16px;
-        box-shadow: 0 8px 30px rgba(2, 6, 23, 0.45);
+        border-radius: 0.75rem;
+        padding: 14px 1rem;
+        box-shadow: 0 0.5rem 1.875rem rgba(2, 6, 23, 0.45);
         border: 1px solid rgba(12, 17, 25, 0.06);
         box-sizing: border-box;
     }
 
     .code {
-        margin-bottom: 8px;
+        margin-bottom: 0.5rem;
 
         .code-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
+            gap: 0.75rem;
         }
 
         .code-value {
@@ -64,29 +60,29 @@ $max-width: 960px;
             line-height: 1;
             font-weight: 800;
             color: $primary;
-            padding: 10px 18px;
+            padding: 0.625rem 1.125rem;
             background: #fff;
-            border-radius: 12px;
+            border-radius: 0.75rem;
             border: 1px solid rgba(0, 0, 0, 0.06);
             min-width: 160px;
             text-align: center;
-            box-shadow: 0 6px 18px rgba(2, 6, 23, 0.18);
-            letter-spacing: 2px;
+            box-shadow: 0 0.375rem 1.125rem rgba(2, 6, 23, 0.18);
+            letter-spacing: 0.125rem;
         }
 
         .code-leave-btn {
             background: linear-gradient(90deg, #ef4444, color.adjust(#ef4444, $lightness: -6%));
             color: #fff;
-            border-radius: 8px;
-            padding: 6px 10px;
+            border-radius: 0.5rem;
+            padding: 0.375rem 0.625rem;
             border: none;
             cursor: pointer;
             flex: 0 0 auto;
-            margin-left: 12px;
+            margin-left: 0.75rem;
         }
 
         .code-hint {
-            margin-top: 8px;
+            margin-top: 0.5rem;
             font-size: 0.85rem;
             color: $muted;
             text-align: center;
@@ -103,25 +99,25 @@ $max-width: 960px;
         .players-title {
             font-size: 1.05rem;
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 0.5rem;
         }
 
         .players-list {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 0.5rem;
             flex: 1 1 auto;
             min-height: 0;
             /* allow flex child to scroll */
             overflow-y: auto;
-            padding-right: 6px;
+            padding-right: 0.375rem;
             /* avoid content under scrollbar */
         }
 
         .players-bottom {
-            margin-top: 12px;
+            margin-top: 0.75rem;
             display: flex;
-            gap: 12px;
+            gap: 0.75rem;
             justify-content: center;
             align-items: center;
             flex: 0 0 auto;
@@ -134,15 +130,15 @@ $max-width: 960px;
 
         .join-row {
             display: flex;
-            gap: 12px;
+            gap: 0.75rem;
             align-items: center;
             justify-content: center;
             width: 100%;
         }
 
         .join-input {
-            padding: 10px 12px;
-            border-radius: 8px;
+            padding: 0.625rem 0.75rem;
+            border-radius: 0.5rem;
             border: 1px solid rgba(15, 23, 42, 0.08);
             min-width: 140px;
             flex: 0 0 auto;
@@ -150,9 +146,9 @@ $max-width: 960px;
         }
 
         .join-btn {
-            padding: 10px 12px;
+            padding: 0.625rem 0.75rem;
             width: 160px;
-            border-radius: 10px;
+            border-radius: 0.625rem;
             background: linear-gradient(90deg, $primary, color.adjust($primary, $lightness: -6%));
             color: #fff;
             border: none;
@@ -160,16 +156,16 @@ $max-width: 960px;
         }
 
         .join-error {
-            margin-top: 8px;
+            margin-top: 0.5rem;
             color: $danger;
             text-align: center;
         }
 
         .start-btn,
         .quit-btn {
-            padding: 10px 12px;
+            padding: 0.625rem 0.75rem;
             width: 160px;
-            border-radius: 10px;
+            border-radius: 0.625rem;
             color: #fff;
             border: none;
             cursor: pointer;
@@ -190,9 +186,9 @@ $max-width: 960px;
     }
 
     .player {
-        padding: 10px 12px;
+        padding: 0.625rem 0.75rem;
         min-height: 48px;
-        border-radius: 8px;
+        border-radius: 0.5rem;
         border: 1px solid rgba(12, 17, 25, 0.06);
         background: white;
         display: flex;
@@ -204,7 +200,7 @@ $max-width: 960px;
         }
 
         .player-tag {
-            margin-left: 8px;
+            margin-left: 0.5rem;
             color: $muted;
             font-size: 0.9rem;
         }

@@ -69,7 +69,7 @@ export const MainView: Com = () => {
 
     return <div className='main'>
         <h1 className='title'>Splendor</h1>
-        <p className='subtitle'>Quick start or join an existing room — play with friends</p>
+        <p className='subtitle'>Quick start or join an existing room</p>
 
         {/* Create Game Section */}
         <div className='panel'>

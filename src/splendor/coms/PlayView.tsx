@@ -1,4 +1,4 @@
-import { $ezh, Com, navigate, useState } from 'ezh'
+import { $ezh, Com, navigate, resetOnRemount, useState, watchMount } from 'ezh'
 import { client } from '../client'
 import { Game } from '../models/Game'
 import { User } from '../models/User'
@@ -134,7 +134,7 @@ const GemRow: Com<{ gems: number[], noOpOnGold?: true, onClickGem?: (idx: number
 const GameInfo: Com<{ game: Game, currPlayer: Player }> = ({ game, currPlayer }) => {
     return <div className='game-info'>
         <div>
-            <button className='leave-btn' onclick={() => navigate('/')}>Leave Game</button>
+            <button className='leave-btn' onclick={() => navigate('/')}>Leave</button>
         </div>
         <div className='code-value'>{game.gameCode.toString()}</div>
         <div className='round-label'>
@@ -182,6 +182,7 @@ const PlayerTab: Com<{ game: Game, players: Player[], state: GameState }> = ({ g
                     className={className}
                     onclick={() => state.selectedPlayer = idx}
                 >
+                    {player.playerId === game.players[game.current] ? '\u2605' : ''}
                     {player.name}: {player.score}
                 </div>
             )
@@ -285,10 +286,10 @@ const TakingGemsOverlay: Com<{ game: Game, gameState: GameState, player: Player 
         },
         (ver, state) => {
             if (ver === 1) {
+                const gemIdx = gameState.takingGem!
                 state.gameGems = game.gems
-                for (const gemIdx of state.takingGems) {
-                    state.gameGems[gemIdx]--
-                }
+                state.gameGems[gemIdx]--
+                state.takingGems = [gemIdx]
             }
         },
     )
@@ -565,6 +566,26 @@ const TakingCardOverlay: Com<{ game: Game, gameState: GameState, player: Player 
     </div>
 }
 
+const resize = () => {
+    const root = document.querySelector('#root')
+    const page = document.querySelector('#page') as HTMLElement
+    const play = document.querySelector('#play') as HTMLElement
+    if (root && page && play) {
+        const scaleWidth = root.clientWidth / play.offsetWidth
+        const scaleHeight = root.clientHeight / play.offsetHeight
+        page.style.transform = `scale(${scaleWidth < scaleHeight ? scaleWidth : scaleHeight})`
+    }
+}
+
+const onMounted = () => {
+    resize()
+    window.addEventListener('resize', resize)
+}
+
+const onUnmounted = () => {
+    window.removeEventListener('resize', resize)
+}
+
 export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
     const currPlayer = client.loadModel(Player, { playerId: game.players[game.current] })
     if (!currPlayer) {
@@ -576,7 +597,7 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
         selectedPlayer: game.current,
         takingGem: undefined,
         takingCard: undefined,
-    })
+    }, resetOnRemount)
 
     const selectedPlayer = client.loadModel(Player, { playerId: game.players[state.selectedPlayer] })
     if (!selectedPlayer) {
@@ -595,8 +616,9 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
         }
     }
 
-    return <div className='page'>
-        <div className='play'>
+    watchMount(onMounted, onUnmounted)
+    return <div id='page'>
+        <div id='play'>
             {/* Top panel groups nobles/gems on the left and controls on the right */}
             <div className='top-panel'>
                 <div className='left-section'>

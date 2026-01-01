@@ -28,12 +28,16 @@ export const PrepareView: Com<{ game: Game, gameInfo: GameInfo, user: User }> = 
     })
 
     const handleJoinGame = async () => {
-        if (!state.playerName.trim()) {
+        const name = state.playerName.trim()
+        if (!name) {
             state.error = 'Please enter a player name'
+            return
+        } else if (name.length > 10) {
+            state.error = 'Player name is too long (max 10 characters)'
             return
         }
         try {
-            if (await client.joinGame(game.gameId, state.playerName.trim())) {
+            if (await client.joinGame(game.gameId, name)) {
                 state.error = ''
                 state.playerName = ''
             }
@@ -63,10 +67,8 @@ export const PrepareView: Com<{ game: Game, gameInfo: GameInfo, user: User }> = 
     }
 
     return <div className='prepare'>
-        <div className='header'>
-            <h1 className='header-title'>Game Preparation</h1>
-        </div>
-
+        <h1 className='title'>Splendor</h1>
+        <p className='subtitle'>Be a player or just watch</p>
         {/* Game Code */}
         <div className='code'>
             <div className='code-row'>

@@ -1,4 +1,4 @@
-import { decField, KeyObj, Model, ModelCtor, Struct } from 'ezh-model'
+import { decField, KeyObj, loading, Model, ModelCtor, Struct } from 'ezh-model'
 import { CommonError, createNumPkgTypeClient, JustrunAuthProvider, MessageWrapper, RequestWrapper, TimeoutMonitor } from 'justrun-ws'
 import { createModelLoader } from 'justrun-loader'
 import { CreateGameRequest } from './packages/CreateGame'
@@ -10,6 +10,8 @@ import { StartGameRequest } from './packages/StartGame'
 import { BuyCardRequest } from './packages/BuyCard'
 import { TakeGemsRequest } from './packages/TakeGems'
 import { ReserveCardRequest } from './packages/ReserveCard'
+
+export { loading }
 
 class AuthState extends Struct<AuthState> {
     @decField
@@ -138,11 +140,12 @@ export const client = {
             gameId,
         }))
     },
-    async takeGems(gameId: string, gems: number[]) {
+    async takeGems(gameId: string, taking: number[], returning: number[]) {
         return sendRequest(new TakeGemsRequest({
             userId: authState.cid,
             gameId,
-            gems,
+            taking,
+            returning,
         }))
     },
     async buyCard(gameId: string, cardId: string, gems: number[]) {

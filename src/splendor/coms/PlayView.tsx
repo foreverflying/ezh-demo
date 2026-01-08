@@ -1,5 +1,5 @@
 import { $ezh, Com, navigate, resetOnRemount, useState, watchMount } from 'ezh'
-import { client } from '../client'
+import { client, loading } from '../client'
 import { Game } from '../models/Game'
 import { User } from '../models/User'
 import { Card } from '../models/Card'
@@ -36,12 +36,8 @@ type TakingCardState = {
     plans: PayGemPlan[]
 }
 
-const validateTakingGems = (gameGems: number[], playerGems: number[], taking: number[]): number => {
+const validateTakingGems = (gameGems: number[], taking: number[]): number => {
     if (taking.length > 3) {
-        return -1
-    }
-    const total = playerGems.reduce((sum, count) => sum + count, 0)
-    if (total + taking.length > 10) {
         return -1
     }
     const [first, second, third] = taking
@@ -64,9 +60,12 @@ const validateTakingGems = (gameGems: number[], playerGems: number[], taking: nu
 }
 
 const CardView: Com<{ cardId: string, onclick?: (id: string) => void }> = ({ cardId, onclick }) => {
-    const card = client.loadModel(Card, { id: cardId })
+    const card = client.loadModel(Card, { id: cardId }, true)
     if (!card) {
         return null
+    }
+    if (card === loading) {
+        return <div className='card card-loading'></div>
     }
     const operateCls = onclick ? ' operate' : ''
     const handler = !onclick ? undefined : () => onclick!(cardId)
@@ -283,58 +282,99 @@ const TakingGemsOverlay: Com<{ game: Game, gameState: GameState, player: Player 
     const takingState = useState(
         {
             gameGems: game.gems,
+            playerGems: player.gems,
+            playerGemCount: player.gems.reduce((sum, count) => sum + count, 0),
             takingGems: [gemIdx],
+            returningGems: [] as number[],
         },
         (ver, state, initial) => {
             if (ver === 1) {
                 resetOnRemount(ver, state, initial)
                 state.gameGems[gemIdx]--
+                state.playerGems[gemIdx]++
+                state.playerGemCount++
             }
         },
     )
 
-    const takingGems = takingState.takingGems
-    const shouldDisableTake = validateTakingGems(game.gems, player.gems, takingGems) !== 1
-    const onPickGem = (idx: number) => {
-        if (validateTakingGems(game.gems, player.gems, [...takingGems, idx]) < 0) {
+    const { gameGems, playerGems, playerGemCount, takingGems, returningGems } = takingState
+    const isFull = validateTakingGems(game.gems, takingGems) === 1
+    const overLimit = playerGemCount > 10 ? playerGemCount - 10 : 0
+    const canTake = playerGemCount < 10 ? isFull : (playerGemCount === 10 ? true : false)
+    const onPickGem = (gemIdx: number) => {
+        if (validateTakingGems(game.gems, [...takingGems, gemIdx]) < 0) {
             return
         }
-        takingGems.push(idx)
-        takingState.gameGems[idx]--
+        takingGems.push(gemIdx)
+        gameGems[gemIdx]--
+        playerGems[gemIdx]++
+        takingState.playerGemCount++
     }
     const onTakeGem = async () => {
-        if (await client.takeGems(game.gameId, takingGems)) {
+        if (await client.takeGems(game.gameId, takingGems, returningGems)) {
             gameState.takingGem = undefined
         }
+    }
+    const onReturnGem = !overLimit ? undefined : (gemIdx: number) => {
+        const gemAt = takingGems.indexOf(gemIdx)
+        if (gemAt >= 0) {
+            takingGems.splice(gemAt, 1)
+        } else {
+            returningGems.push(gemIdx)
+        }
+        gameGems[gemIdx]++
+        playerGems[gemIdx]--
+        takingState.playerGemCount--
     }
 
     return <div className='taking-gems'>
         <div className='current-gems'>
-            <GemRow gems={takingState.gameGems} noOpOnGold={true} onClickGem={onPickGem} />
+            <GemRow gems={gameGems} noOpOnGold={true} onClickGem={onPickGem} />
         </div>
-        <div className='gems-and-actions'>
-            <div className='gem-slots'>
+        <div className='gem-slots'>
+            <div className='gem-taking'>
                 {[0, 1, 2].map((idx) => {
-                    const onPutBackGem = (gemIdx: number) => {
-                        takingGems.splice(idx, 1)
-                        takingState.gameGems[gemIdx]++
-                    }
                     const gem = takingGems[idx]
-                    return gem ? (
-                        <GemBig key={idx} colorIdx={gem} count={1} onclick={onPutBackGem} />
-                    ) : (
-                        <div key={idx} className='gem-slot empty' />
-                    )
+                    if (gem) {
+                        const onPutBackGem = (gemIdx: number) => {
+                            takingGems.splice(idx, 1)
+                            gameGems[gemIdx]++
+                            playerGems[gemIdx]--
+                            takingState.playerGemCount--
+                        }
+                        return <GemBig key={idx} colorIdx={gem} count={1} onclick={onPutBackGem} />
+                    } else if (!isFull) {
+                        return <div key={idx} className='gem-slot empty' />
+                    } else {
+                        return null
+                    }
                 })}
             </div>
-            <div className='taking-actions'>
-                <button className='take-btn' disabled={shouldDisableTake} onclick={onTakeGem}>
-                    Take
-                </button>
-                <button className='cancel-btn' onclick={() => {
-                    gameState.takingGem = undefined
-                }}>Cancel</button>
+            <div className='gem-returning'>
+                {!overLimit ? null : Array.from({ length: overLimit }).map((_, idx) => {
+                    return <div key={idx} className='gem-slot empty' />
+                })}
+                {returningGems.toReversed().map((gem, idx) => {
+                    const onPutBackGem = (gemIdx: number) => {
+                        returningGems.splice(returningGems.length - gemIdx - 1, 1)
+                        gameGems[gem]--
+                        playerGems[gem]++
+                        takingState.playerGemCount++
+                    }
+                    return <GemBig key={idx} colorIdx={gem} count={1} onclick={onPutBackGem} />
+                })}
             </div>
+        </div>
+        <div className='player-gems'>
+            <GemRow gems={playerGems} onClickGem={onReturnGem} />
+        </div>
+        <div className='taking-actions'>
+            <button className='take-btn' disabled={!canTake} onclick={onTakeGem}>
+                Take
+            </button>
+            <button className='cancel-btn' onclick={() => {
+                gameState.takingGem = undefined
+            }}>Cancel</button>
         </div>
     </div>
 }

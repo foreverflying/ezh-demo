@@ -1,7 +1,6 @@
 import { $ezh, Com, useState, bindData, navigate, Effect } from 'ezh'
-import { loading } from 'ezh-model'
 import { CommonError } from 'justrun-ws'
-import { client } from '../client'
+import { client, loading } from '../client'
 import { nopFunc } from '../common/utils'
 import { User } from '../models/User'
 import './MainView.scss'

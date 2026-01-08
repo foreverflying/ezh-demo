@@ -4,7 +4,7 @@ $primary: #1976d2;
 $accent: #daa520;
 $muted: #6b7280;
 $focus: #d6d609;
-$bg-panel: rgba(255, 255, 255, 0.96);
+$bg-panel: #f5f5f5;
 $max-width: 120rem;
 
 #page {
@@ -116,6 +116,49 @@ $max-width: 120rem;
     background-color: #7FCC7F;
 }
 
+.card-loading {
+    background: linear-gradient(90deg, #4a5568 25%, #6b7280 50%, #4a5568 75%);
+    background-size: 200% 100%;
+    animation: cardLoadingShimmer 2s infinite;
+    border-color: #6b7280;
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent);
+        animation: cardLoadingShine 2s infinite;
+    }
+}
+
+@keyframes cardLoadingShimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+@keyframes cardLoadingShine {
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
 .cards {
     width: 100%;
     box-sizing: border-box;
@@ -135,7 +178,7 @@ $max-width: 120rem;
     box-sizing: border-box;
 
     .gem-row {
-        padding-top: 0.3125rem;
+        padding: 0.3125rem 0.375rem 0 0.375rem;
         display: flex;
         gap: 1.25rem;
         flex-wrap: nowrap;
@@ -483,6 +526,9 @@ $max-width: 120rem;
     }
 
     .player-detail {
+        position: relative;
+        z-index: 1;
+        margin-top: -1px;
         padding: 0.5rem 0.625rem;
         background: $bg-panel;
         border-radius: 0 0 0.625rem 0.625rem;
@@ -576,8 +622,7 @@ $max-width: 120rem;
     top: 0;
     left: 0;
     background: $bg-color;
-    border-radius: 0.75rem;
-    padding-right: 0.625rem;
+    border-radius: 1rem;
     margin: 0;
     box-shadow: none;
     z-index: 100;
@@ -588,34 +633,24 @@ $max-width: 120rem;
 
     .current-gems {
         margin-bottom: 0;
-        padding: 0;
+        padding: 0 0 0.46875rem 0;
         background: inherit;
         border-radius: 0;
     }
 
-    .gems-and-actions {
-        display: flex;
-        gap: 0.75rem;
-        align-items: center;
-        padding: 0.75rem 0;
-        margin-top: 0.9375rem;
-    }
-
     .gem-slots {
         display: flex;
-        gap: 1.25rem;
+        gap: 0;
         margin-bottom: 0;
         margin-top: 0;
-        padding: 0;
         justify-content: flex-start;
-        align-items: center;
+        align-items: stretch;
 
         .gem-slot {
             width: 3.125rem;
             height: 3.125rem;
             border-radius: 50%;
             background: rgba(0, 0, 0, 0.1);
-            display: flex;
             align-items: center;
             justify-content: center;
 
@@ -623,6 +658,47 @@ $max-width: 120rem;
                 background: #6B6B6B;
             }
         }
+
+        .gem-taking {
+            display: flex;
+            gap: 1.25rem;
+            padding: 0.46875rem 0.625rem 0.25rem 0.375rem;
+            align-items: center;
+            justify-content: flex-start;
+            background: $bg-panel;
+            border-radius: 1rem 1rem 0 0;
+            min-width: calc(3.125rem * 3 + 1.25rem * 2);
+            min-height: 3.125rem;
+        }
+
+        .gem-returning {
+            display: flex;
+            gap: 1.25rem;
+            padding: 0.46875rem 0.375rem 0.25rem 0.625rem;
+            align-items: center;
+            justify-content: flex-end;
+            background: inherit;
+            min-width: calc(3.125rem * 3 + 1.25rem * 2);
+            min-height: 3.125rem;
+        }
+    }
+
+    .player-gems {
+        margin-top: -1px;
+        padding: 0.25rem 0 0.46875rem 0;
+        background: $bg-panel;
+        border-radius: 0 1rem 0 0;
+    }
+
+    .taking-actions {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        justify-content: flex-end;
+        background: $bg-panel;
+        border-radius: 0 0 1rem 1rem;
+        padding: 0.25rem 0.375rem 0.75rem 0.375rem;
+        margin-top: -1px;
     }
 }
 

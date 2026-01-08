@@ -3,7 +3,8 @@ import { DoneResp, JsonRequest } from '../defPackage'
 export type TakeGemsReq = {
     userId: string
     gameId: string
-    gems: number[]
+    taking: number[]
+    returning: number[]
 }
 
 export class TakeGemsRequest extends JsonRequest<TakeGemsReq, DoneResp> { }

@@ -553,13 +553,17 @@ const TakingCardOverlay: Com<{ game: Game, gameState: GameState, player: Player 
     }
 
     const onBuyCard = async () => {
-        const payGems = [0, 0, 0, 0, 0, 0]
+        const payGems = [] as number[][]
         for (const plan of plans) {
+            const gems = [] as number[]
             if (plan.gems) {
                 for (const { colorIdx, count } of plan.gems) {
-                    payGems[colorIdx] = count
+                    for (let i = 0; i < count; i++) {
+                        gems.push(colorIdx)
+                    }
                 }
             }
+            payGems.push(gems)
         }
         if (await client.buyCard(game.gameId, cardId, payGems)) {
             gameState.takingCard = undefined

@@ -1,1 +1,1 @@
-export const nopFunc = () => { /* do nothing */ }
+export const nopFunc = () => { }

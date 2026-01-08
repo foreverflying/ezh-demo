@@ -4,7 +4,7 @@ export type BuyCardReq = {
     userId: string
     gameId: string
     cardId: string
-    gems: number[]
+    payGems: number[][]
 }
 
 export class BuyCardRequest extends JsonRequest<BuyCardReq, DoneResp> { }

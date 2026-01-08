@@ -148,12 +148,12 @@ export const client = {
             returning,
         }))
     },
-    async buyCard(gameId: string, cardId: string, gems: number[]) {
+    async buyCard(gameId: string, cardId: string, payGems: number[][]) {
         return sendRequest(new BuyCardRequest({
             userId: authState.cid,
             gameId,
             cardId,
-            gems,
+            payGems,
         }))
     },
     async reserveCard(gameId: string, cardId: string) {

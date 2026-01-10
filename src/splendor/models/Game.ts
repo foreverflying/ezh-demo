@@ -17,6 +17,9 @@ export class Game extends Model<Game> {
     @decField
     declare current: number
 
+    @decField
+    declare winner: string
+
     @decArray
     declare players: string[]
 
@@ -25,6 +28,9 @@ export class Game extends Model<Game> {
 
     @decArray
     declare nobles: string[]
+
+    @decArray
+    declare noblesClaimed: string[]
 
     @decArray
     declare cards: string[]

@@ -104,11 +104,6 @@ export const MainView: Com = () => {
                         inputMode='numeric'
                         placeholder='Game Code'
                         value={bindData(state, 'gameCode')}
-                        onfocus={(e) => {
-                            const input = e.target as HTMLInputElement
-                            input.value = ''
-                            state.error = ''
-                        }}
                         oninput={(e) => {
                             const input = e.target as HTMLInputElement
                             input.value = input.value.replace(/\D/g, '').slice(0, 6)

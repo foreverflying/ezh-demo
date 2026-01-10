@@ -20,8 +20,8 @@ export class Player extends Model<Player> {
     @decField
     declare score: number
 
-    @decField
-    declare noble?: string
+    @decArray
+    declare nobles: string[]
 
     @decArray
     declare gems: number[]

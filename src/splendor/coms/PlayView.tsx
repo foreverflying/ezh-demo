@@ -144,12 +144,13 @@ const GameInfo: Com<{ game: Game, currPlayer: Player }> = ({ game, currPlayer })
     </div>
 }
 
-const NobleRow: Com<{ nobles: string[] }> = ({ nobles }) => {
+const NobleRow: Com<{ nobles: string[], claimedNobles: string[] }> = ({ nobles, claimedNobles }) => {
     return <div className='noble-row'>
         {nobles.map((id) => {
+            const claimed = claimedNobles.includes(id) ? ' claimed' : ''
             const noble = client.loadModel(Noble, { id })
             return !noble ? null : (
-                <div key={id} className='noble'>
+                <div key={id} className={`noble${claimed}`}>
                     <div className='noble-score'>{noble.score}</div>
                     <div className='noble-criteria'>
                         {noble.criteria.map((count, idx) => !count ? null : (
@@ -189,14 +190,19 @@ const PlayerTab: Com<{ game: Game, players: Player[], state: GameState }> = ({ g
     </div>
 }
 
-const PlayerNoble: Com<{ nobleId?: string }> = ({ nobleId }) => {
-    if (nobleId) {
+const PlayerNoble: Com<{ nobles: string[] }> = ({ nobles }) => {
+    let score = 0
+    for (const nobleId of nobles) {
         const noble = client.loadModel(Noble, { id: nobleId })
         if (noble) {
-            return <div className='player-noble'>{noble.score}</div>
+            score += noble.score
         }
     }
-    return <div className='player-noble empty' />
+    return score ? (
+        <div className='player-noble'>{score}</div>
+    ) : (
+        <div className='player-noble empty' />
+    )
 }
 
 const PlayerBonusSet: Com<{ bonuses: number[] }> = ({ bonuses }) => {
@@ -252,9 +258,13 @@ const PlayersPanel: Com<{ game: Game, state: GameState, onClickCard?: (cardId: s
     return <div className='players-panel'>
         <PlayerTab game={game} players={players} state={state} />
         <div className='player-detail'>
-            <div className='player-box'>
+            <div className='player-score'>
+                <div className='score-value'>{player.score}</div>
+                <div className='score-label'>Score</div>
+            </div>
+            <div className='player-box player-main'>
                 <div className='player-row'>
-                    <PlayerNoble nobleId={player.noble} />
+                    <PlayerNoble nobles={player.nobles} />
                     <PlayerBonusSet bonuses={player.bonuses} />
                 </div>
                 <div className='player-row'>
@@ -264,12 +274,15 @@ const PlayersPanel: Com<{ game: Game, state: GameState, onClickCard?: (cardId: s
                     <div className='row-empty' />
                 </div>
             </div>
-            <div className='player-box'>
-                {player.reserved.map((cardId, idx) => {
-                    return <div key={idx}>
-                        <PlayerReservedCard cardId={cardId} onClickCard={onClickCard} />
+            <div className='player-box reserved-cards'>
+                {player.reserved.length === 0 ? (
+                    <div className='reserved-empty'>
+                        <div>Reserved Cards</div>
+                        <div>Up to 3</div>
                     </div>
-                })}
+                ) : player.reserved.map((cardId, idx) => (
+                    <PlayerReservedCard key={idx} cardId={cardId} onClickCard={onClickCard} />
+                ))}
             </div>
         </div>
     </div>
@@ -405,10 +418,10 @@ const PayGemPlanView: Com<{ state: PayGemPlan, filling: boolean, onClickGem: (ge
     </div>
 }
 
-const BuyCardPlanView: Com<{ card: Card, state: TakingCardState }> = ({ card, state }) => {
+const BuyCardPlanView: Com<{ state: TakingCardState }> = ({ state }) => {
     const { plans, gameGems, playerGems, fillingPos } = state
-    return <div className={`buy-card card-${GemType[card.bonus]}`}>
-        <div className='buy-card-lines'>
+    return <div className={'buy-card'}>
+        <div className='buy-card-plan'>
             {plans.map((plan, pos) => {
                 const filling = fillingPos === pos
                 const onWithdrawGem = (gemIdx: number) => {
@@ -555,15 +568,15 @@ const TakingCardOverlay: Com<{ game: Game, gameState: GameState, player: Player 
     const onBuyCard = async () => {
         const payGems = [] as number[][]
         for (const plan of plans) {
-            const gems = [] as number[]
             if (plan.gems) {
+                const gems = [] as number[]
                 for (const { colorIdx, count } of plan.gems) {
                     for (let i = 0; i < count; i++) {
                         gems.push(colorIdx)
                     }
                 }
+                payGems.push(gems)
             }
-            payGems.push(gems)
         }
         if (await client.buyCard(game.gameId, cardId, payGems)) {
             gameState.takingCard = undefined
@@ -577,7 +590,7 @@ const TakingCardOverlay: Com<{ game: Game, gameState: GameState, player: Player 
     }
 
     return <div className='taking-card'>
-        <div className='overlay-gems'>
+        <div className='game-gems'>
             <GemRow gems={gameGems} />
         </div>
         <div className='overlay-card-area'>
@@ -585,22 +598,22 @@ const TakingCardOverlay: Com<{ game: Game, gameState: GameState, player: Player 
                 <CardView cardId={cardId} />
             </div>
             <div className='buy-card'>
-                <BuyCardPlanView card={card} state={state} />
+                <BuyCardPlanView state={state} />
             </div>
         </div>
-        <div className='overlay-gems'>
+        <div className='player-gems'>
             <GemRow gems={playerGems} onClickGem={state.fillingPos >= 0 ? onPayGem : undefined} />
         </div>
         <div className='taking-actions'>
-            <button className='reserve-btn' disabled={!canReserve} onclick={onReserveCard} >
-                Reserve
-            </button>
             <button className='take-btn' disabled={state.fillingPos >= 0} onclick={onBuyCard} >
                 Purchase
             </button>
-            <button className='cancel-btn' onclick={() => {
-                gameState.takingCard = undefined
-            }}>Cancel</button>
+            <button className='cancel-btn' onclick={() => { gameState.takingCard = undefined }}>
+                Cancel
+            </button>
+            <button className='reserve-btn' disabled={!canReserve} onclick={onReserveCard} >
+                Reserve
+            </button>
         </div>
     </div>
 }
@@ -630,7 +643,7 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
     if (!currPlayer) {
         return null
     }
-    const { cards, gems, nobles } = game
+    const { cards, gems, nobles, noblesClaimed } = game
     const state = useState<GameState>({
         userPlayerId: user.playerId,
         selectedPlayer: game.current,
@@ -662,7 +675,7 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
             <div className='top-panel'>
                 <div className='left-section'>
                     <div className='nobles'>
-                        <NobleRow nobles={nobles} />
+                        <NobleRow nobles={nobles} claimedNobles={noblesClaimed} />
                     </div>
                     <div className='gems'>
                         <GemRow gems={gems} noOpOnGold={true} onClickGem={onClickGem} />

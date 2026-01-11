@@ -9,11 +9,6 @@ import { FinishView } from './FinishView'
 
 export const GameView: Com<{ gameId: string }> = ({ gameId }) => {
     const { userId } = client
-    if (!userId) {
-        return <Effect on={() => {
-            client.SignUpAnonymously().catch(nopFunc)
-        }} />
-    }
     const user = client.loadModel(User, { userId })
     if (!user) {
         return

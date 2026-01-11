@@ -1,5 +1,5 @@
 import { decField, KeyObj, loading, Model, ModelCtor, Struct } from 'ezh-model'
-import { CommonError, createNumPkgTypeClient, JustrunAuthProvider, MessageWrapper, RequestWrapper, TimeoutMonitor } from 'justrun-ws'
+import { CommonError, ConnAliveMonitor, createNumPkgTypeClient, JustrunAuthProvider, MessageWrapper, RequestWrapper } from 'justrun-ws'
 import { createModelLoader } from 'justrun-loader'
 import { CreateGameRequest } from './packages/CreateGame'
 import { VisitGameRequest } from './packages/VisitGame'
@@ -38,8 +38,8 @@ const authProvider = new JustrunAuthProvider(
 
 const wsClient = createNumPkgTypeClient(
     '',
-    // new TimeoutMonitor(0, 3, 6),
-    new TimeoutMonitor(10000, 3, 6),
+    // new ConnAliveMonitor(0, 6, 3),
+    new ConnAliveMonitor(10000, 6, 3),
 )
 wsClient.enableAuthenticate(0xff00, authProvider)
 wsClient.registerError(0x03, CommonError)

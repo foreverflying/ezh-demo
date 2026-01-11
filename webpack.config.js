@@ -3,6 +3,7 @@
 const path = require('path')
 const dotenv = require('dotenv')
 const { ezhTransformer } = require('ezh-trans')
+const { DefinePlugin } = require('webpack')
 
 const envFile = process.env.NODE_ENV ? `${process.env.NODE_ENV}.env` : '.env'
 dotenv.config({ path: path.resolve(__dirname, 'env', envFile) })
@@ -60,6 +61,11 @@ module.exports = {
     resolve: {
         extensions: ['.ts', '.tsx', '.js'],
     },
+    plugins: [
+        new DefinePlugin({
+            'process.env.LOG_CLASS_LOG_LEVEL': 3,
+        }),
+    ],
     module: {
         rules: [
             {

@@ -7,11 +7,6 @@ import './MainView.scss'
 
 export const MainView: Com = () => {
     const { userId } = client
-    if (!userId) {
-        return <Effect on={() => {
-            client.SignUpAnonymously()
-        }} />
-    }
     const user = client.loadModel(User, { userId }, true)
     if (user === loading) {
         return

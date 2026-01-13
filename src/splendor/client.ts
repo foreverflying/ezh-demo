@@ -1,4 +1,4 @@
-import { decField, KeyObj, loading, Model, ModelCtor, Struct } from 'ezh-model'
+import { decField, KeyObj, loading, Model, ModelCtor, SameObj, Struct } from 'ezh-model'
 import { CommonError, ConnAliveMonitor, createNumPkgTypeClient, JustrunAuthProvider, MessageWrapper, RequestWrapper } from 'justrun-ws'
 import { createModelLoader } from 'justrun-loader'
 import { CreateGameRequest } from './packages/CreateGame'
@@ -63,6 +63,9 @@ const sendRequest = async <RequestT, ResponseT>(
         isRequesting = true
         return wsClient.sendRequest(request)
             .catch((err) => {
+                if (err instanceof CommonError) {
+                    throw err
+                }
                 console.log('error:', err)
                 return undefined
             })
@@ -99,9 +102,9 @@ export const client = {
     loadModel<ModelT extends Model<ModelT>>(
         modelCtor: ModelCtor<ModelT>,
         keyObj: KeyObj<ModelT>,
-        showLoading?: true,
+        loading?: SameObj<ModelT>,
     ): ModelT | undefined {
-        return modelLoader.load(modelCtor, keyObj, showLoading)
+        return modelLoader.load(modelCtor, keyObj, loading)
     },
     async createGame(playerCount: number) {
         return sendRequest(new CreateGameRequest({

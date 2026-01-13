@@ -7,7 +7,7 @@ import './MainView.scss'
 
 export const MainView: Com = () => {
     const { userId } = client
-    const user = client.loadModel(User, { userId }, true)
+    const user = client.loadModel(User, { userId }, loading)
     if (user === loading) {
         return
     }
@@ -39,9 +39,7 @@ export const MainView: Com = () => {
                 navigate(`/game/${result.gameId}`)
             }
         } catch (err) {
-            if (err instanceof CommonError) {
-                state.error = err.data
-            }
+            state.error = (err as CommonError).data
         }
     }
 
@@ -55,9 +53,7 @@ export const MainView: Com = () => {
                 navigate(`/game/${result.gameId}`)
             }
         } catch (err) {
-            if (err instanceof CommonError) {
-                state.error = err.data
-            }
+            state.error = (err as CommonError).data
         }
     }
 

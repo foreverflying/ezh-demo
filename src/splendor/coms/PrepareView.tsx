@@ -41,8 +41,8 @@ export const PrepareView: Com<{ game: Game, gameInfo: GameInfo, user: User }> = 
                 state.error = ''
                 state.playerName = ''
             }
-        } catch (error) {
-            state.error = error instanceof CommonError ? error.data : 'Failed to join game'
+        } catch (err) {
+            state.error = (err as CommonError).data
         }
     }
 
@@ -51,8 +51,8 @@ export const PrepareView: Com<{ game: Game, gameInfo: GameInfo, user: User }> = 
             if (await client.quitGame(game.gameId)) {
                 state.error = ''
             }
-        } catch (error) {
-            state.error = error instanceof CommonError ? error.data : 'Failed to leave game'
+        } catch (err) {
+            state.error = (err as CommonError).data
         }
     }
 
@@ -61,8 +61,8 @@ export const PrepareView: Com<{ game: Game, gameInfo: GameInfo, user: User }> = 
             if (await client.startGame(game.gameId)) {
                 state.error = ''
             }
-        } catch (error) {
-            state.error = error instanceof CommonError ? error.data : 'Failed to start game'
+        } catch (err) {
+            state.error = (err as CommonError).data
         }
     }
 

@@ -60,7 +60,7 @@ const validateTakingGems = (gameGems: number[], taking: number[]): number => {
 }
 
 const CardView: Com<{ cardId: string, onclick?: (id: string) => void }> = ({ cardId, onclick }) => {
-    const card = client.loadModel(Card, { id: cardId }, true)
+    const card = client.loadModel(Card, { id: cardId }, loading)
     if (!card) {
         return null
     }
@@ -166,11 +166,6 @@ const NobleRow: Com<{ nobles: string[], claimedNobles: string[] }> = ({ nobles, 
 }
 
 const PlayerTab: Com<{ game: Game, players: Player[], state: GameState }> = ({ game, players, state }) => {
-    useState({ lastCurrent: game.current }, (ver, innerState) => {
-        if (ver && game.current !== innerState.lastCurrent) {
-            state.selectedPlayer = innerState.lastCurrent = game.current
-        }
-    })
     return <div className='player-tabs'>
         {players.map((player, idx) => {
             const className = 'player-tab'
@@ -242,9 +237,15 @@ const PlayerReservedCard: Com<{ cardId: string, onClickCard?: (cardId: string) =
     })()
 }
 
-const PlayersPanel: Com<{ game: Game, state: GameState, onClickCard?: (cardId: string) => void }> = (
-    { game, state, onClickCard },
+const PlayersPanel: Com<{ game: Game, state: GameState, currPlayer: Player, onClickCard?: (cardId: string) => void }> = (
+    { game, state, currPlayer, onClickCard },
 ) => {
+    useState({ lastCurrent: game.current }, (ver, innerState) => {
+        if (ver && game.current !== innerState.lastCurrent) {
+            state.selectedPlayer = innerState.lastCurrent = game.current
+        }
+    })
+
     const players: Player[] = []
     for (const playerId of game.players) {
         const player = client.loadModel(Player, { playerId })
@@ -255,6 +256,8 @@ const PlayersPanel: Com<{ game: Game, state: GameState, onClickCard?: (cardId: s
         }
     }
     const player = players[state.selectedPlayer]
+    onClickCard = player === currPlayer ? onClickCard : undefined
+
     return <div className='players-panel'>
         <PlayerTab game={game} players={players} state={state} />
         <div className='player-detail'>
@@ -651,11 +654,6 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
         takingCard: undefined,
     }, resetOnRemount)
 
-    const selectedPlayer = client.loadModel(Player, { playerId: game.players[state.selectedPlayer] })
-    if (!selectedPlayer) {
-        return null
-    }
-
     let onClickGem: ((idx: number) => void) | undefined = undefined
     let onClickCard: ((cardId: string) => void) | undefined = undefined
     const isOperating = game.players[game.current] === user.playerId
@@ -697,11 +695,7 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
 
             {/* Players Section */}
             <div className='players'>
-                <PlayersPanel
-                    game={game}
-                    state={state}
-                    onClickCard={selectedPlayer === currPlayer ? onClickCard : undefined}
-                />
+                <PlayersPanel game={game} state={state} currPlayer={currPlayer} onClickCard={onClickCard} />
             </div>
         </div>
     </div>

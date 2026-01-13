@@ -1,5 +1,5 @@
 import { $ezh, Com, navigate, Effect } from 'ezh'
-import { client } from '../client'
+import { client, loading } from '../client'
 import { nopFunc } from '../common/utils'
 import { Game, GameInfo } from '../models/Game'
 import { User } from '../models/User'
@@ -14,11 +14,16 @@ export const GameView: Com<{ gameId: string }> = ({ gameId }) => {
         return
     }
     if (user.gameId && user.gameId !== gameId) {
-        navigate('/')
+        return <Effect on={() => {
+            client.leaveGame(user.gameId!).catch(nopFunc)
+        }} />
+    }
+    const game = client.loadModel(Game, { gameId }, loading)
+    if (game === loading) {
         return
     }
-    const game = client.loadModel(Game, { gameId })
     if (!game) {
+        navigate('/')
         return
     }
     if (!user.gameId) {

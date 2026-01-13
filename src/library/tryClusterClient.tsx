@@ -1,5 +1,5 @@
 import { $ezh, Com } from 'ezh'
-import { KeyObj, loading, Model, ModelCtor } from 'ezh-model'
+import { KeyObj, loading, Model, ModelCtor, SameObj } from 'ezh-model'
 import { CommonError, createNumPkgTypeClient, JustrunAuthProvider } from 'justrun-ws'
 import { createModelLoader } from 'justrun-loader'
 import { User } from './model/User'
@@ -34,9 +34,9 @@ const modelLoader = createModelLoader(client, 0x01, 0x02)
 const loadModel = <ModelT extends Model<ModelT>>(
     modelCtor: ModelCtor<ModelT>,
     keyObj: KeyObj<ModelT>,
-    showLoading?: true,
+    loading?: SameObj<ModelT>,
 ): ModelT | undefined => {
-    return modelLoader.load(modelCtor, keyObj, showLoading)
+    return modelLoader.load(modelCtor, keyObj, loading)
 }
 
 const borrowBook = (userId: string, libraryId: string, bookId: string): void => {
@@ -63,7 +63,7 @@ const BorrowPanel: Com<{ userId: string, libraryId: string, bookId: string }> = 
 }
 
 const UserPanel: Com<{ userId: string }> = ({ userId }) => {
-    const user = loadModel(User, { userId })
+    const user = loadModel(User, { userId }, loading)
     if (user) {
         if (user === loading) {
             return <div>

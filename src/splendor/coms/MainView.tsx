@@ -7,14 +7,14 @@ import './MainView.scss'
 
 export const MainView: Com = () => {
     const { userId } = client
-    const user = client.loadModel(User, { userId }, loading)
-    if (user === loading) {
-        return
-    }
+    const user = client.loadModel(User, { userId })
     if (!user) {
-        return <Effect on={() => {
-            client.resetAuthState()
-        }} />
+        if (!client.loadModel(User, { userId }, loading)) {
+            return <Effect on={() => {
+                client.resetAuthState()
+            }} />
+        }
+        return
     }
     if (user.gameId) {
         return <Effect on={() => {

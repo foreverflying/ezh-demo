@@ -18,12 +18,12 @@ export const GameView: Com<{ gameId: string }> = ({ gameId }) => {
             client.leaveGame(user.gameId!).catch(nopFunc)
         }} />
     }
-    const game = client.loadModel(Game, { gameId }, loading)
-    if (game === loading) {
-        return
-    }
+    const game = client.loadModel(Game, { gameId })
     if (!game) {
-        navigate('/')
+        // check if game is really not exist
+        if (!client.loadModel(Game, { gameId }, loading)) {
+            navigate('/')
+        }
         return
     }
     if (!user.gameId) {

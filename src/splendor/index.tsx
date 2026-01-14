@@ -45,7 +45,7 @@ const SignUpView: Com<{ returnTo?: string }> = ({ returnTo }) => {
 
 const routeMap = {
     connErr: route(ConnErrorView, '/conn-err?returnTo', true),
-    signUp: route(SignUpView, '/signup', true),
+    signUp: route(SignUpView, '/signup?returnTo', true),
     main: route(MainView, '/'),
     game: route(GameView, '/game/:gameId'),
 }

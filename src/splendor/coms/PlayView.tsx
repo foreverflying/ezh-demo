@@ -5,12 +5,15 @@ import { User } from '../models/User'
 import { Card } from '../models/Card'
 import { Noble } from '../models/Noble'
 import { Player } from '../models/Player'
-import { GemType } from '../models/common'
+import { GemType, ActionType } from '../models/common'
+import { Action } from '../models/Player'
 import './PlayView.scss'
 
 type GameState = {
     selectedPlayer: number
+    lastCurrent: number
     userPlayerId?: string
+    showActionTimer?: number
     takingGem?: number
     takingCard?: string
 }
@@ -144,23 +147,30 @@ const GameInfo: Com<{ game: Game, currPlayer: Player }> = ({ game, currPlayer })
     </div>
 }
 
+const NobleView: Com<{ nobleId: string, className?: string }> = ({ nobleId, className }) => {
+    const noble = client.loadModel(Noble, { id: nobleId })
+    if (!noble) {
+        return null
+    }
+    return (
+        <div className={`noble${className ? ` ${className}` : ''}`}>
+            <div className='noble-score'>{noble.score}</div>
+            <div className='noble-criteria'>
+                {noble.criteria.map((count, idx) => !count || (
+                    <div key={idx} className={`criteria criteria-${GemType[idx + 1]}`}>
+                        {count}
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+}
+
 const NobleRow: Com<{ nobles: string[], claimedNobles: string[] }> = ({ nobles, claimedNobles }) => {
     return <div className='noble-row'>
         {nobles.map((id) => {
-            const claimed = claimedNobles.includes(id) ? ' claimed' : ''
-            const noble = client.loadModel(Noble, { id })
-            return !noble ? null : (
-                <div key={id} className={`noble${claimed}`}>
-                    <div className='noble-score'>{noble.score}</div>
-                    <div className='noble-criteria'>
-                        {noble.criteria.map((count, idx) => !count ? null : (
-                            <div key={idx} className={`criteria criteria-${GemType[idx + 1]}`}>
-                                {count}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )
+            const claimed = claimedNobles.includes(id) ? 'claimed' : ''
+            return <NobleView key={id} nobleId={id} className={claimed} />
         })}
     </div>
 }
@@ -237,15 +247,9 @@ const PlayerReservedCard: Com<{ cardId: string, onClickCard?: (cardId: string) =
     })()
 }
 
-const PlayersPanel: Com<{ game: Game, state: GameState, currPlayer: Player, onClickCard?: (cardId: string) => void }> = (
-    { game, state, currPlayer, onClickCard },
+const PlayersPanel: Com<{ game: Game, state: GameState, onClickCard?: (cardId: string) => void }> = (
+    { game, state, onClickCard },
 ) => {
-    useState({ lastCurrent: game.current }, (ver, innerState) => {
-        if (ver && game.current !== innerState.lastCurrent) {
-            state.selectedPlayer = innerState.lastCurrent = game.current
-        }
-    })
-
     const players: Player[] = []
     for (const playerId of game.players) {
         const player = client.loadModel(Player, { playerId })
@@ -256,8 +260,6 @@ const PlayersPanel: Com<{ game: Game, state: GameState, currPlayer: Player, onCl
         }
     }
     const player = players[state.selectedPlayer]
-    onClickCard = player === currPlayer ? onClickCard : undefined
-
     return <div className='players-panel'>
         <PlayerTab game={game} players={players} state={state} />
         <div className='player-detail'>
@@ -621,6 +623,58 @@ const TakingCardOverlay: Com<{ game: Game, gameState: GameState, player: Player 
     </div>
 }
 
+const LastActionOverlay: Com<{ playerId: string }> = ({ playerId }) => {
+    const player = client.loadModel(Player, { playerId })
+    if (!player?.lastAction) {
+        return null
+    }
+    const { name, lastAction } = player
+    const { type, card, noble, gemsTaken, gemsReturned } = lastAction
+    const actionLabel = type === ActionType.TakeGems ? 'Took Gems' : (
+        type === ActionType.ReserveCard ? 'Reserved Card' : 'Purchased Card'
+    )
+
+    return <div className='last-action-overlay'>
+        <div className='action-player'>{name}</div>
+        <div className='action-type'>{actionLabel}</div>
+        {(card || noble) && (
+            <div className='action-content'>
+                {card && (
+                    <div className='action-card'>
+                        <CardView cardId={card} />
+                    </div>
+                )}
+                {noble && (
+                    <div className='action-noble'>
+                        <span className='noble-label'>Got Noble:</span>
+                        <NobleView nobleId={noble} />
+                    </div>
+                )}
+            </div>
+        )}
+        {!gemsTaken?.length ? null : (
+            <div className='action-gems'>
+                <span className='gems-label'>Took:</span>
+                <div className='gems-list'>
+                    {gemsTaken.map((gemIdx, i) => (
+                        <GemSmall key={i} colorIdx={gemIdx} count={1} />
+                    ))}
+                </div>
+            </div>
+        )}
+        {!gemsReturned?.length ? null : (
+            <div className='action-gems returned'>
+                <span className='gems-label'>Returned:</span>
+                <div className='gems-list'>
+                    {gemsReturned.map((gemIdx, i) => (
+                        <GemSmall key={i} colorIdx={gemIdx} count={1} />
+                    ))}
+                </div>
+            </div>
+        )}
+    </div>
+}
+
 const resize = () => {
     const root = document.querySelector('#root')
     const page = document.querySelector('#page') as HTMLElement
@@ -642,21 +696,41 @@ const onUnmounted = () => {
 }
 
 export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
-    const currPlayer = client.loadModel(Player, { playerId: game.players[game.current] })
+    const { current, cards, gems, nobles, noblesClaimed, players, playerCount } = game
+    const currPlayer = client.loadModel(Player, { playerId: players[current] })
     if (!currPlayer) {
         return null
     }
-    const { cards, gems, nobles, noblesClaimed } = game
-    const state = useState<GameState>({
-        userPlayerId: user.playerId,
-        selectedPlayer: game.current,
-        takingGem: undefined,
-        takingCard: undefined,
-    }, resetOnRemount)
+    const state = useState<GameState>(
+        {
+            selectedPlayer: current,
+            lastCurrent: current,
+            userPlayerId: user.playerId,
+            showActionTimer: undefined,
+            takingGem: undefined,
+            takingCard: undefined,
+        },
+        (ver, state, initial) => {
+            if (ver) {
+                if (ver === 1) {
+                    resetOnRemount(ver, state, initial)
+                }
+                if (current !== state.lastCurrent) {
+                    state.selectedPlayer = state.lastCurrent = current
+                    if (state.showActionTimer) {
+                        clearTimeout(state.showActionTimer)
+                    }
+                    state.showActionTimer = setTimeout(() => {
+                        state.showActionTimer = undefined
+                    }, 6000)
+                }
+            }
+        },
+    )
 
     let onClickGem: ((idx: number) => void) | undefined = undefined
     let onClickCard: ((cardId: string) => void) | undefined = undefined
-    const isOperating = game.players[game.current] === user.playerId
+    const isOperating = players[current] === user.playerId
     if (isOperating && !state.takingGem && !state.takingCard) {
         onClickGem = (gemIdx: number) => {
             state.takingGem = gemIdx
@@ -679,6 +753,7 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
                         <GemRow gems={gems} noOpOnGold={true} onClickGem={onClickGem} />
                         {state.takingGem && <TakingGemsOverlay game={game} gameState={state} player={currPlayer} />}
                         {state.takingCard && <TakingCardOverlay game={game} gameState={state} player={currPlayer} />}
+                        {state.showActionTimer && <LastActionOverlay playerId={players[(current || playerCount) - 1]} />}
                     </div>
                 </div>
                 <div className='right-section'>
@@ -695,7 +770,11 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
 
             {/* Players Section */}
             <div className='players'>
-                <PlayersPanel game={game} state={state} currPlayer={currPlayer} onClickCard={onClickCard} />
+                <PlayersPanel
+                    game={game}
+                    state={state}
+                    onClickCard={state.selectedPlayer === current ? onClickCard : undefined}
+                />
             </div>
         </div>
     </div>

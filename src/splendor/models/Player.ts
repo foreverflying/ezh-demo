@@ -1,4 +1,22 @@
-import { Model, decKey, KeyObj, decField, decArray } from '../defModel'
+import { Model, decKey, KeyObj, decField, decArray, Struct } from '../defModel'
+import { ActionType } from './common'
+
+export class Action extends Struct<Action> {
+    @decField
+    declare type: ActionType
+
+    @decField
+    declare card?: string
+
+    @decField
+    declare noble?: string
+
+    @decArray
+    declare gemsTaken?: number[]
+
+    @decArray
+    declare gemsReturned?: number[]
+}
 
 export class Player extends Model<Player> {
     static override keyObjToKey(key: KeyObj<Player>): string {
@@ -31,4 +49,7 @@ export class Player extends Model<Player> {
 
     @decArray
     declare reserved: string[]
+
+    @decField
+    declare lastAction?: Action
 }

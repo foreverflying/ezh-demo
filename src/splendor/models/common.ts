@@ -12,3 +12,9 @@ export enum CardCategory {
     Medium = 1,
     High = 2,
 }
+
+export enum ActionType {
+    TakeGems = 0,
+    ReserveCard = 1,
+    PurchaseCard = 2
+}

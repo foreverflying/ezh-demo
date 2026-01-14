@@ -11,6 +11,12 @@ export const GameView: Com<{ gameId: string }> = ({ gameId }) => {
     const { userId } = client
     const user = client.loadModel(User, { userId })
     if (!user) {
+        // check if user is really not exist
+        if (!client.loadModel(User, { userId }, loading)) {
+            return <Effect on={() => {
+                client.resetAuthState()
+            }} />
+        }
         return
     }
     if (user.gameId && user.gameId !== gameId) {

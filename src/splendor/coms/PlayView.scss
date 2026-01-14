@@ -944,3 +944,111 @@ $max-width: 120rem;
         }
     }
 }
+
+.last-action-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(11, 18, 32, 0.95);
+    border: 0.1875rem solid $accent;
+    border-radius: 1rem;
+    padding: 2rem 3rem;
+    z-index: 150;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    min-width: 18rem;
+    min-height: 14rem;
+    box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.5);
+    animation: fadeInOut 6s ease-in-out forwards;
+
+    .action-player {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: $accent;
+    }
+
+    .action-type {
+        font-size: 1.25rem;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+
+    .action-content {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .action-card {
+        display: flex;
+        justify-content: center;
+    }
+
+    .action-noble {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+
+        .noble-label {
+            font-size: 0.875rem;
+            color: $accent;
+            font-weight: bold;
+        }
+
+        .noble {
+            flex: 0 0 auto;
+            width: 5.5rem;
+            height: 5.5rem;
+        }
+    }
+
+    .action-gems {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+
+        .gems-label {
+            font-size: 0.875rem;
+            color: $muted;
+        }
+
+        .gems-list {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        &.returned {
+            .gems-label {
+                color: #ef4444;
+            }
+        }
+    }
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    80% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+}

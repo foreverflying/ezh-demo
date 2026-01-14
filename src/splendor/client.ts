@@ -38,8 +38,8 @@ const authProvider = new JustrunAuthProvider(
 
 const wsClient = createNumPkgTypeClient(
     '',
-    // new ConnAliveMonitor(0, 6, 3),
-    new ConnAliveMonitor(10000, 6, 3),
+    new ConnAliveMonitor(0, 6, 3),
+    // new ConnAliveMonitor(10000, 6, 3),
 )
 wsClient.enableAuthenticate(0xff00, authProvider)
 wsClient.registerError(0x03, CommonError)

@@ -1,6 +1,8 @@
 import { Model, decKey, KeyObj, decArray, decField } from '../defModel'
 
 export class Noble extends Model<Noble> {
+    static override readonly source = 'config'
+
     static override keyObjToKey(key: KeyObj<Noble>): string {
         return `${this.name}|${key.id}`
     }

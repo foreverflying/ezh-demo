@@ -72,14 +72,14 @@ const CardView: Com<{ cardId: string, onclick?: (id: string) => void }> = ({ car
         return <div className='card card-loading'></div>
     }
     const operateCls = onclick ? ' operate' : ''
-    const handler = !onclick ? undefined : () => onclick!(cardId)
+    const handler = onclick && (() => onclick!(cardId))
     return <div className={`card card-${GemType[card.bonus]}${operateCls}`} onclick={handler}>
         <div className='card-left'>
             {card.score > 0 ? <div className='card-score'>{card.score}</div> : null}
         </div>
         <div className='card-right'>
             <div className='card-costs'>
-                {card.costs.map((count, idx) => !count ? null : (
+                {card.costs.map((count, idx) => !count || (
                     <GemSmall key={idx} colorIdx={idx + 1} count={count} />
                 ))}
             </div>
@@ -103,7 +103,7 @@ const GemBig: Com<{ colorIdx: number, count?: number, onclick?: (idx: number) =>
         className={`gem gem-big gem-${GemType[colorIdx]}${!count ? ' empty' : ''}${operateCls}`}
         onclick={!operateCls ? undefined : () => onclick!(colorIdx)}
     >
-        {!count ? null : <div className='gem-count'>{count}</div>}
+        {!count || <div className='gem-count'>{count}</div>}
     </div>
 }
 
@@ -232,14 +232,14 @@ const PlayerReservedCard: Com<{ cardId: string, onClickCard?: (cardId: string) =
 ) => {
     return (() => {
         const card = client.loadModel(Card, { id: cardId })
-        return !card ? null : (
+        return card && (
             <div
                 className={`reserved-card card-${GemType[card.bonus]}${onClickCard ? ' operate' : ''}`}
                 onclick={onClickCard ? () => onClickCard(cardId) : undefined}
             >
                 <div className='reserved-score'>{card.score || ''}</div>
                 <div className='reserved-cost'>
-                    {card.costs.map((count, costIdx) => !count ? null : (
+                    {card.costs.map((count, costIdx) => !count || (
                         <GemSmall key={costIdx} colorIdx={costIdx + 1} count={count} />
                     ))}
                 </div>
@@ -370,7 +370,7 @@ const TakingGemsOverlay: Com<{ game: Game, gameState: GameState, player: Player 
                 })}
             </div>
             <div className='gem-returning'>
-                {!overLimit ? null : Array.from({ length: overLimit }).map((_, idx) => {
+                {!overLimit || Array.from({ length: overLimit }).map((_, idx) => {
                     return <div key={idx} className='gem-slot empty' />
                 })}
                 {returningGems.toReversed().map((gem, idx) => {
@@ -415,7 +415,7 @@ const PayGemPlanView: Com<{ state: PayGemPlan, filling: boolean, onClickGem: (ge
             ) : (
                 <div className='slot full'>&#x2714;</div>
             )}
-            {!gems ? null : gems.map((gem) => (
+            {gems && gems.map((gem) => (
                 <div key={gem.colorIdx}>
                     <GemSmall colorIdx={gem.colorIdx} count={gem.count} onclick={() => onClickGem(gem.colorIdx)} />
                 </div>
@@ -676,22 +676,22 @@ const LastActionOverlay: Com<{ playerId: string, onClose: () => void }> = ({ pla
                 )}
             </div>
         )}
-        {!gemsTaken?.length ? null : (
+        {!gemsTaken?.length || (
             <div className='action-gems'>
                 <span className='gems-label'>Took:</span>
                 <div className='gems-list'>
                     {summarizeGems(gemsTaken).map((count, gemIdx) => (
-                        !count ? null : <GemSmall key={gemIdx} colorIdx={gemIdx} count={count} />
+                        !count || <GemSmall key={gemIdx} colorIdx={gemIdx} count={count} />
                     ))}
                 </div>
             </div>
         )}
-        {!gemsReturned?.length ? null : (
+        {!gemsReturned?.length || (
             <div className='action-gems returned'>
                 <span className='gems-label'>Returned:</span>
                 <div className='gems-list'>
                     {summarizeGems(gemsReturned).map((count, gemIdx) => (
-                        !count ? null : <GemSmall key={gemIdx} colorIdx={gemIdx} count={count} />
+                        !count || <GemSmall key={gemIdx} colorIdx={gemIdx} count={count} />
                     ))}
                 </div>
             </div>
@@ -772,7 +772,7 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
         }
     }
 
-    watchMount(onMounted, onUnmounted)
+    watchMount(undefined, onMounted, onUnmounted)
     return <div id='page'>
         <div id='play'>
             {state.showActionTimer && <LastActionOverlay

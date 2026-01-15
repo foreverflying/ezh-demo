@@ -53,6 +53,10 @@ interface LevelObj {
     level: number
 }
 
+type Test4State = {
+    record: { count: number }[]
+}
+
 const Test4: Com<{ levelObj: LevelObj }> = ({ levelObj }) => {
     const state = useState(
         {
@@ -88,6 +92,7 @@ const Test4: Com<{ levelObj: LevelObj }> = ({ levelObj }) => {
             }
         },
     )
+
     const record = state.record
 
     // should fail the debugCheck:
@@ -98,7 +103,7 @@ const Test4: Com<{ levelObj: LevelObj }> = ({ levelObj }) => {
     const display = record.map(item => item.count).join(', ')
     return <>
         <div className='hello'>
-            <p>Test 4 - Count record: {display}</p>
+            <p>Count record: {display}</p>
             <Test1 text='Test3' counter={last} />
             <p>.</p>
             <Test3 record={record} />
@@ -156,7 +161,7 @@ const Test5: Com<{ text: string, some?: string }> = ({ text }) => {
             <input id='checkbox2' type='checkbox' checked={state.isSelected} />
             <label htmlFor='checkbox2'>Data NOT Bound</label>
         </p>
-        <p style={styleArr[state.counter.count % 2]}>Checkbox: {state.isSelected}</p>
+        <p style={styleArr[state.counter.count % 2]}>Checkbox: {state.isSelected ? 'true' : 'false'}</p>
         <p>line 0 -------------------------------------- <u onclick={onclick}>CLICK ME!!</u></p>
         {/* {arr[left]} */}
         <p>line 1 -------------------------------------- {`${state.name} : LEVEL IS ${state.level}`}</p>

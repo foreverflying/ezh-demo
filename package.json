@@ -18,9 +18,9 @@
     "dts-bundle-generator": "^9.5.1",
     "eslint": "^9.21.0",
     "eslint-plugin-import": "^2.31.0",
-    "ezh-trans": "^0.2.2",
+    "ezh-trans": "^0.3.0",
     "globals": "^17.0.0",
-    "log-class": "^1.0.6",
+    "log-class": "^1.0.7",
     "minify-ts": "^1.3.1",
     "sass": "^1.86.0",
     "sass-loader": "^16.0.5",
@@ -32,9 +32,9 @@
     "webpack-dev-server": "^5.2.0"
   },
   "dependencies": {
-    "ezh": "^0.3.8",
-    "ezh-model": "^0.4.2",
-    "justrun-loader": "^0.4.2",
+    "ezh": "^0.4.1",
+    "ezh-model": "^0.4.4",
+    "justrun-loader": "^0.4.4",
     "justrun-ws": "^0.4.2"
   }
 }

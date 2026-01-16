@@ -13,10 +13,13 @@ type GameState = {
     selectedPlayer: number
     lastCurrent: number
     userPlayerId?: string
-    showActionTimer?: number
+    leaveQuestion?: string
     takingGem?: number
     takingCard?: string
-    showLeaveConfirm?: true
+    showAction?: {
+        timer: number
+        playerId: string
+    }
 }
 
 type PayGem = {
@@ -61,6 +64,16 @@ const validateTakingGems = (gameGems: number[], taking: number[]): number => {
         }
     }
     return 0
+}
+
+const showPlayerLastAction = (state: GameState, playerId: string): void => {
+    if (state.showAction) {
+        clearTimeout(state.showAction.timer)
+    }
+    state.showAction = {
+        timer: setTimeout(() => { state.showAction = undefined }, 3000),
+        playerId,
+    }
 }
 
 const CardView: Com<{ cardId: string, onclick?: (id: string) => void }> = ({ cardId, onclick }) => {
@@ -144,7 +157,7 @@ const GameInfo: Com<{ game: Game, currPlayer: Player, onLeave: () => void }> = (
             Round
             <span className='round-value'>{game.round}</span>
         </div>
-        <div className='player-name'>{currPlayer.name}</div>
+        <div className='player-name'><span className='player-name-text'>{currPlayer.name}</span></div>
     </div>
 }
 
@@ -177,6 +190,10 @@ const NobleRow: Com<{ nobles: string[], claimedNobles: string[] }> = ({ nobles, 
 }
 
 const PlayerTab: Com<{ game: Game, players: Player[], state: GameState }> = ({ game, players, state }) => {
+    const onSelectPlayer = (idx: number) => {
+        state.selectedPlayer = idx
+        showPlayerLastAction(state, players[idx].playerId)
+    }
     return <div className='player-tabs'>
         {players.map((player, idx) => {
             const className = 'player-tab'
@@ -186,10 +203,10 @@ const PlayerTab: Com<{ game: Game, players: Player[], state: GameState }> = ({ g
                 <div
                     key={idx}
                     className={className}
-                    onclick={() => state.selectedPlayer = idx}
+                    onclick={() => onSelectPlayer(idx)}
                 >
                     {player.playerId === game.players[game.current] ? '\u2605' : ''}
-                    {player.name}: {player.score}
+                    <span className='player-name-text'>{player.name}</span>: {player.score}
                 </div>
             )
         })}
@@ -248,18 +265,9 @@ const PlayerReservedCard: Com<{ cardId: string, onClickCard?: (cardId: string) =
     })()
 }
 
-const PlayersPanel: Com<{ game: Game, state: GameState, onClickCard?: (cardId: string) => void }> = (
-    { game, state, onClickCard },
+const PlayersPanel: Com<{ game: Game, players: Player[], state: GameState, onClickCard?: (cardId: string) => void }> = (
+    { game, players, state, onClickCard },
 ) => {
-    const players: Player[] = []
-    for (const playerId of game.players) {
-        const player = client.loadModel(Player, { playerId })
-        if (player) {
-            players.push(player)
-        } else {
-            return
-        }
-    }
     const player = players[state.selectedPlayer]
     return <div className='players-panel'>
         <PlayerTab game={game} players={players} state={state} />
@@ -632,12 +640,14 @@ const summarizeGems = (gems: number[]): number[] => {
     return summary
 }
 
-const LeaveConfirmDialog: Com<{ onConfirm: () => void, onCancel: () => void }> = ({ onConfirm, onCancel }) => {
+const LeaveConfirmDialog: Com<{ message: string, onConfirm: () => void, onCancel: () => void }> = (
+    { message, onConfirm, onCancel },
+) => {
     return <div className='leave-confirm-overlay'>
         <div className='leave-confirm-dialog'>
             <button className='close-btn' onclick={onCancel}>×</button>
             <div className='confirm-title'>Leave Game?</div>
-            <div className='confirm-message'>Are you sure you want to leave the game?</div>
+            <div className='confirm-message'>{message}</div>
             <div className='confirm-buttons'>
                 <button className='cancel-btn' onclick={onCancel}>Cancel</button>
                 <button className='confirm-btn' onclick={onConfirm}>Leave</button>
@@ -657,7 +667,7 @@ const LastActionOverlay: Com<{ playerId: string, onClose: () => void }> = ({ pla
         type === ActionType.ReserveCard ? 'Reserved Card' : 'Purchased Card'
     )
 
-    return <div className='last-action-overlay'>
+    return <div key={playerId} className='last-action-overlay'>
         <button className='close-btn' onclick={onClose}>×</button>
         <div className='action-player'>{name}</div>
         <div className='action-type'>{actionLabel}</div>
@@ -700,12 +710,11 @@ const LastActionOverlay: Com<{ playerId: string, onClose: () => void }> = ({ pla
 }
 
 const resize = () => {
-    const root = document.querySelector('#root')
     const page = document.querySelector('#page') as HTMLElement
     const play = document.querySelector('#play') as HTMLElement
-    if (root && page && play) {
-        const scaleWidth = root.clientWidth / play.offsetWidth
-        const scaleHeight = root.clientHeight / play.offsetHeight
+    if (page && play) {
+        const scaleWidth = window.visualViewport!.width / play.offsetWidth
+        const scaleHeight = window.visualViewport!.height / play.offsetHeight
         page.style.transform = `scale(${scaleWidth < scaleHeight ? scaleWidth : scaleHeight})`
     }
 }
@@ -720,20 +729,27 @@ const onUnmounted = () => {
 }
 
 export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
-    const { current, cards, gems, nobles, noblesClaimed, players, playerCount } = game
-    const currPlayer = client.loadModel(Player, { playerId: players[current] })
-    if (!currPlayer) {
-        return null
+    const playerArr: Player[] = []
+    for (const playerId of game.players) {
+        const player = client.loadModel(Player, { playerId })
+        if (player) {
+            playerArr.push(player)
+        } else {
+            return
+        }
     }
+
+    const { current, cards, gems, nobles, noblesClaimed, players, playerCount } = game
+    const currPlayer = playerArr[current]
     const state = useState<GameState>(
         {
             selectedPlayer: current,
             lastCurrent: current,
             userPlayerId: user.playerId,
-            showActionTimer: undefined,
+            leaveQuestion: undefined,
             takingGem: undefined,
             takingCard: undefined,
-            showLeaveConfirm: undefined,
+            showAction: undefined,
         },
         (ver, state, initial) => {
             if (ver) {
@@ -742,12 +758,7 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
                 }
                 if (current !== state.lastCurrent) {
                     state.selectedPlayer = state.lastCurrent = current
-                    if (state.showActionTimer) {
-                        clearTimeout(state.showActionTimer)
-                    }
-                    state.showActionTimer = setTimeout(() => {
-                        state.showActionTimer = undefined
-                    }, 6000)
+                    showPlayerLastAction(state, players[(current || playerCount) - 1])
                 }
             }
         },
@@ -766,22 +777,31 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
     }
 
     const closeActionOverlay = () => {
-        if (state.showActionTimer) {
-            clearTimeout(state.showActionTimer)
-            state.showActionTimer = undefined
+        if (state.showAction) {
+            clearTimeout(state.showAction.timer)
+            state.showAction = undefined
+        }
+    }
+
+    const onLeave = () => {
+        if (user.playerId) {
+            state.leaveQuestion = 'Are you sure you want to leave the game?'
+        } else {
+            navigate('/')
         }
     }
 
     watchMount(undefined, onMounted, onUnmounted)
     return <div id='page'>
         <div id='play'>
-            {state.showActionTimer && <LastActionOverlay
-                playerId={players[(current || playerCount) - 1]}
+            {state.showAction && <LastActionOverlay
+                playerId={state.showAction.playerId}
                 onClose={closeActionOverlay}
             />}
-            {state.showLeaveConfirm && <LeaveConfirmDialog
+            {state.leaveQuestion && <LeaveConfirmDialog
+                message={state.leaveQuestion}
                 onConfirm={() => navigate('/')}
-                onCancel={() => state.showLeaveConfirm = undefined}
+                onCancel={() => state.leaveQuestion = undefined}
             />}
             {/* Top panel groups nobles/gems on the left and controls on the right */}
             <div className='top-panel'>
@@ -796,7 +816,7 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
                     </div>
                 </div>
                 <div className='right-section'>
-                    <GameInfo game={game} currPlayer={currPlayer} onLeave={() => state.showLeaveConfirm = true} />
+                    <GameInfo game={game} currPlayer={currPlayer} onLeave={onLeave} />
                 </div>
             </div>
 
@@ -811,6 +831,7 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
             <div className='players'>
                 <PlayersPanel
                     game={game}
+                    players={playerArr}
                     state={state}
                     onClickCard={state.selectedPlayer === current ? onClickCard : undefined}
                 />

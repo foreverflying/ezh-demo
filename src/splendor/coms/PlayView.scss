@@ -492,6 +492,16 @@ $max-width: 120rem;
         font-size: 1.6rem;
         font-weight: 600;
         color: $accent;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+
+        & .player-name-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 7rem;
+        }
     }
 }
 
@@ -518,6 +528,10 @@ $max-width: 120rem;
             color: $muted;
             border-radius: 0.625rem 0.625rem 0 0;
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.2rem;
 
             &.active {
                 background: $bg-panel;
@@ -530,6 +544,13 @@ $max-width: 120rem;
 
             &:hover:not(.active):not(.self) {
                 color: $primary;
+            }
+
+            & .player-name-text {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                max-width: 5rem;
             }
         }
     }
@@ -962,7 +983,7 @@ $max-width: 120rem;
     min-width: 18rem;
     min-height: 14rem;
     box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.2);
-    animation: fadeInOut 6s ease-in-out forwards;
+    animation: fadeInOut 3s ease-in-out forwards;
 
     .close-btn {
         position: absolute;

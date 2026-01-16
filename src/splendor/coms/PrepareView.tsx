@@ -3,15 +3,17 @@ import { CommonError } from 'justrun-ws'
 import { client } from '../client'
 import { Game, GameInfo } from '../models/Game'
 import { Player } from '../models/Player'
+import { GamePlayingCounter } from '../models/statistics'
 import { User } from '../models/User'
 import './PrepareView.scss'
 
-const PlayerItem: Com<{ user: User, playerId: string }> = ({ user, playerId }) => {
+const PlayerItem: Com<{ user: User, playerId: string, index: number }> = ({ user, playerId, index }) => {
     const player = client.loadModel(Player, { playerId })
     if (!player) return null
     const isCurrentPlayer = playerId === user.playerId
     return (
-        <div className='player'>
+        <div className={`player ${isCurrentPlayer ? 'self' : ''}`}>
+            <span className='rank-number'>#{index + 1}</span>
             <span className='player-name'>{player.name}</span>
             {isCurrentPlayer
                 ? <span className='player-tag'>(You)</span>
@@ -21,7 +23,9 @@ const PlayerItem: Com<{ user: User, playerId: string }> = ({ user, playerId }) =
     )
 }
 
-export const PrepareView: Com<{ game: Game, gameInfo: GameInfo, user: User }> = ({ game, gameInfo: _gameInfo, user }) => {
+export const PrepareView: Com<{ game: Game, gameInfo: GameInfo, user: User }> = ({ game, gameInfo, user }) => {
+    const { gameId, gameCode, players, playerCount } = game
+    const playingCounter = client.loadModel(GamePlayingCounter, { id: '$' }, { id: '$', playingCount: 1 })
     const state = useState({
         playerName: '',
         error: '',
@@ -37,7 +41,7 @@ export const PrepareView: Com<{ game: Game, gameInfo: GameInfo, user: User }> = 
             return
         }
         try {
-            if (await client.joinGame(game.gameId, name)) {
+            if (await client.joinGame(gameId, name)) {
                 state.error = ''
                 state.playerName = ''
             }
@@ -48,7 +52,7 @@ export const PrepareView: Com<{ game: Game, gameInfo: GameInfo, user: User }> = 
 
     const handleQuitGame = async () => {
         try {
-            if (await client.quitGame(game.gameId)) {
+            if (await client.quitGame(gameId)) {
                 state.error = ''
             }
         } catch (err) {
@@ -58,7 +62,7 @@ export const PrepareView: Com<{ game: Game, gameInfo: GameInfo, user: User }> = 
 
     const handleStartGame = async () => {
         try {
-            if (await client.startGame(game.gameId)) {
+            if (await client.startGame(gameId)) {
                 state.error = ''
             }
         } catch (err) {
@@ -68,18 +72,21 @@ export const PrepareView: Com<{ game: Game, gameInfo: GameInfo, user: User }> = 
 
     return <div className='prepare'>
         <h1 className='title'>Splendor</h1>
-        <p className='subtitle'>Be a player or just watch</p>
+        <div className='subtitle'>
+            <div>Currently {playingCounter!.playingCount} games are playing worldwide</div>
+            <div>Your game has {gameInfo.visitors.length} visitors</div>
+        </div>
         {/* Game Code */}
         <div className='code'>
             <div className='code-row'>
                 <div className='code-value'>
-                    {game.gameCode.toString()}
+                    {gameCode.toString()}
                 </div>
                 <button
                     className='code-leave-btn'
                     onclick={() => navigate('/')}
                 >
-                    Leave Game
+                    Leave
                 </button>
             </div>
             <div className='code-hint'>
@@ -89,10 +96,15 @@ export const PrepareView: Com<{ game: Game, gameInfo: GameInfo, user: User }> = 
 
         {/* Player List with join/start/quit controls at the bottom */}
         <div className='players'>
-            <h2 className='players-title'>Players ({game.playerCount} required to Start)</h2>
+            <h2 className='players-title'>Players ({playerCount} required to Start)</h2>
             <div className='players-list'>
-                {game.players.map((playerId) => {
-                    return <PlayerItem key={playerId} user={user} playerId={playerId} />
+                {Array.from({ length: playerCount }).map((_, index) => {
+                    const playerId = players[index]
+                    return playerId ? (
+                        <PlayerItem key={playerId} user={user} playerId={playerId} index={index} />
+                    ) : (
+                        <div key={`empty-${index}`} className='player player-empty' />
+                    )
                 })}
             </div>
 
@@ -103,7 +115,7 @@ export const PrepareView: Com<{ game: Game, gameInfo: GameInfo, user: User }> = 
                         <button
                             className='start-btn'
                             onclick={handleStartGame}
-                            disabled={game.players.length !== game.playerCount}
+                            disabled={players.length !== playerCount}
                         >
                             Start Game
                         </button>

@@ -17,9 +17,6 @@ export class Game extends Model<Game> {
     @decField
     declare current: number
 
-    @decField
-    declare winner: string
-
     @decArray
     declare players: string[]
 
@@ -37,6 +34,12 @@ export class Game extends Model<Game> {
 
     @decArray
     declare gems: number[]
+
+    @decField
+    declare winner?: string
+
+    @decField
+    declare finishedCount?: number
 }
 
 export class GameInfo extends Model<GameInfo> {

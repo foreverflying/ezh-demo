@@ -28,8 +28,13 @@ $max-width: 60rem;
     .subtitle {
         margin: 0;
         color: rgba(255, 255, 255, 0.85);
-        font-size: 0.98rem;
+        font-size: 1.05rem;
         opacity: 0.9;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        text-align: center;
+        align-items: center;
     }
 
     /* Card-like sections */
@@ -73,12 +78,14 @@ $max-width: 60rem;
         .code-leave-btn {
             background: linear-gradient(90deg, #ef4444, color.adjust(#ef4444, $lightness: -6%));
             color: #fff;
-            border-radius: 0.5rem;
-            padding: 0.375rem 0.625rem;
+            border-radius: 0.625rem;
+            padding: 0.625rem 0.75rem;
             border: none;
             cursor: pointer;
-            flex: 0 0 auto;
+            flex: 1;
             margin-left: 0.75rem;
+            font-weight: 600;
+            font-size: 1.05rem;
         }
 
         .code-hint {
@@ -94,24 +101,21 @@ $max-width: 60rem;
         margin-bottom: 0;
         display: flex;
         flex-direction: column;
-        height: 450px;
+        height: 380px;
 
         .players-title {
+            margin: 0.5rem 0 1rem 0;
             font-size: 1.05rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
         }
 
         .players-list {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.65rem;
             flex: 1 1 auto;
             min-height: 0;
-            /* allow flex child to scroll */
             overflow-y: auto;
-            padding-right: 0.375rem;
-            /* avoid content under scrollbar */
         }
 
         .players-bottom {
@@ -140,7 +144,7 @@ $max-width: 60rem;
             padding: 0.625rem 0.75rem;
             border-radius: 0.5rem;
             border: 1px solid rgba(15, 23, 42, 0.08);
-            min-width: 140px;
+            max-width: 48%;
             flex: 0 0 auto;
             box-sizing: border-box;
         }
@@ -149,6 +153,8 @@ $max-width: 60rem;
             padding: 0.625rem 0.75rem;
             width: 160px;
             border-radius: 0.625rem;
+            font-size: 1.05rem;
+            font-weight: 600;
             background: linear-gradient(90deg, $primary, color.adjust($primary, $lightness: -6%));
             color: #fff;
             border: none;
@@ -169,6 +175,8 @@ $max-width: 60rem;
             color: #fff;
             border: none;
             cursor: pointer;
+            font-size: 1.05rem;
+            font-weight: 600;
         }
 
         .start-btn {
@@ -186,17 +194,46 @@ $max-width: 60rem;
     }
 
     .player {
-        padding: 0.625rem 0.75rem;
-        min-height: 48px;
+        padding: 0.35rem 0.6rem;
+        min-height: 2.4rem;
         border-radius: 0.5rem;
-        border: 1px solid rgba(12, 17, 25, 0.06);
         background: white;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        gap: 0.6rem;
+        border-left: 4px solid #1976d2;
+        transition: all 0.2s ease;
+
+        &.self {
+            background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+            border-left-color: #1976d2;
+
+            .player-name {
+                color: #b8860b;
+            }
+
+            .player-tag {
+                color: #b8860b;
+                font-weight: 600;
+            }
+        }
+
+        &.player-empty {
+            background: #e5e7eb;
+            border-left-color: #e5e7eb;
+            box-shadow: none;
+        }
+
+        .rank-number {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1976d2;
+            min-width: 2.5rem;
+        }
 
         .player-name {
             font-weight: 600;
+            flex: 1;
         }
 
         .player-tag {

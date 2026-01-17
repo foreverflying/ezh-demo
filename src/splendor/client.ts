@@ -28,7 +28,7 @@ const authState = new AuthState({ cid: '', sid: '' })
 const host = location.host
 const authProvider = new JustrunAuthProvider(
     `https://${host}/api/auth`,
-    (address, sid) => `wss://${host}/api/ws?sid=${sid}&addr=${address}`,
+    (address, sid, kick) => `wss://${host}/api/ws?sid=${sid}&addr=${address}${kick ? '&kick=1' : ''}`,
     (cid, sid, connErr) => {
         authState.cid = cid
         authState.sid = sid
@@ -38,10 +38,10 @@ const authProvider = new JustrunAuthProvider(
 
 const wsClient = createNumPkgTypeClient(
     '',
-    // new ConnAliveMonitor(0, 6, 5),
+    // new ConnAliveMonitor(0, 6, 4),
     new ConnAliveMonitor(10000, 6, 4),
 )
-wsClient.enableAuthenticate(0xff00, authProvider)
+wsClient.enableAuthenticate(0x3fff, authProvider)
 wsClient.registerError(0x03, CommonError)
 
 wsClient.registerRequest(0x05, CreateGameRequest)
@@ -90,7 +90,10 @@ export const client = {
     get connErr() {
         return authState.connErr
     },
-    SignUpAnonymously() {
+    connectNow() {
+        return wsClient.connectNow()
+    },
+    signUpAnonymously() {
         return authProvider.authWithCredential('signup', 'Guest', '-', 'anonymous')
     },
     resetAuthState() {

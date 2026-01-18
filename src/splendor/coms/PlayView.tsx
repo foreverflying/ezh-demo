@@ -16,6 +16,7 @@ type GameState = {
     leaveQuestion?: string
     takingGem?: number
     takingCard?: string
+    showHelp?: boolean
     showAction?: {
         timer: number
         playerId: string
@@ -147,10 +148,17 @@ const GemRow: Com<{ gems: number[], noOpOnGold?: true, onClickGem?: (idx: number
     </div>
 }
 
-const GameInfo: Com<{ game: Game, currPlayer: Player, onLeave: () => void }> = ({ game, currPlayer, onLeave }) => {
+const GameInfo: Com<{ game: Game, currPlayer: Player, state: GameState, onLeave: () => void }> = (
+    { game, currPlayer, state, onLeave },
+) => {
     return <div className='game-info'>
-        <div>
-            <button className='leave-btn' onclick={onLeave}>Leave</button>
+        <div className='info-buttons'>
+            <button className='icon-btn help-btn' onclick={() => state.showHelp = true} title='Help'>
+                ?
+            </button>
+            <button className='icon-btn close-btn' onclick={onLeave} title='Leave'>
+                ×
+            </button>
         </div>
         <div className='code-value'>{game.gameCode.toString()}</div>
         <div className='round-label'>
@@ -158,6 +166,135 @@ const GameInfo: Com<{ game: Game, currPlayer: Player, onLeave: () => void }> = (
             <span className='round-value'>{game.round}</span>
         </div>
         <div className='player-name'><span className='player-name-text'>{currPlayer.name}</span></div>
+    </div>
+}
+
+const HelpOverlay: Com<{ onClose: () => void }> = ({ onClose }) => {
+    const state = useState({ lang: 'en' as 'en' | 'zh' })
+
+    const content = state.lang === 'en' ? (
+        <>
+            <h2>How to Play Splendor</h2>
+            <div className='help-section'>
+                <h3>Goal</h3>
+                <p>Be the first player to reach 15 prestige points.</p>
+            </div>
+            <div className='help-section'>
+                <h3>On Your Turn</h3>
+                <p>Choose one of the following actions:</p>
+                <ul>
+                    <li>
+                        <strong>Take Gems:</strong>
+                        Take 3 different gems or 2 of the same (if 4+ available).
+                        You can hold up to 10 gems, once exceeding this limit,
+                        you can return any gems, to make sure you end with 10 gems.
+                    </li>
+                    <li>
+                        <strong>Reserve a Card:</strong>
+                        Reserve a card and gain 1 gold gem. You can have up to 3 reserved cards.
+                    </li>
+                    <li>
+                        <strong>Buy a Card:</strong>
+                        Pay gems to purchase a card for bonuses and points.
+                        Card bonuses reduce future purchase costs.
+                        Gold gems can substitute any color.
+                        2 any gems count as 1 gold gem.
+                    </li>
+                </ul>
+            </div>
+            <div className='help-section'>
+                <h3>Nobles</h3>
+                <p>
+                    Nobles visit automatically when your purchased cards meet their bonus requirements.
+                    Each noble is worth prestige points.
+                </p>
+            </div>
+            <div className='help-section'>
+                <h3>Non-Commercial Use Only</h3>
+                <p>This is a demo game showcasing <b>ezh</b>, a next-generation frontend framework alternative to React.</p>
+                <p>
+                    The&nbsp;
+                    <a
+                        href='https://github.com/foreverflying/ezh-demo.git'
+                        target='_blank'
+                        rel='noopener noreferrer'
+                    >
+                        source code
+                    </a>
+                    &nbsp;is freely available, but please do not use commercially.
+                </p>
+            </div>
+        </>
+    ) : (
+        <>
+            <h2>璀璨宝石游戏规则</h2>
+            <div className='help-section'>
+                <h3>目标</h3>
+                <p>成为第一个获得 15 点声望的玩家。</p>
+            </div>
+            <div className='help-section'>
+                <h3>回合操作</h3>
+                <p>选择以下操作之一：</p>
+                <ul>
+                    <li>
+                        <strong>拿取宝石：</strong>
+                        拿取 3 个不同颜色的宝石，或 2 个相同颜色的宝石（该颜色需有 4 个以上）。
+                        你最多持有 10 个宝石，超出时需归还任意宝石至 10 个。
+                    </li>
+                    <li>
+                        <strong>预留卡牌：</strong>
+                        预留一张卡牌并获得 1 个黄金宝石。最多可预留 3 张卡牌。
+                    </li>
+                    <li>
+                        <strong>购买卡牌：</strong>
+                        支付宝石购买卡牌以获得加成和分数。
+                        卡牌加成可减少后续购买成本。
+                        黄金宝石可替代任意颜色。
+                        任意 2 个宝石可折算为 1 个黄金宝石。
+                    </li>
+                </ul>
+            </div>
+            <div className='help-section'>
+                <h3>贵族</h3>
+                <p>
+                    当你购买的卡牌满足贵族的加成要求时，贵族会自动拜访你。
+                    每位贵族都价值相应的声望分数。
+                </p>
+            </div>
+            <div className='help-section'>
+                <h3>请勿用于商业用途</h3>
+                <p>这是用来演示替代 React 的新一代前端框架 <b>ezh</b> 的示例游戏。</p>
+                <p>
+                    可免费获取
+                    <a
+                        href='https://github.com/foreverflying/ezh-demo.git'
+                        target='_blank'
+                        rel='noopener noreferrer'
+                    >
+                        源码
+                    </a>
+                    ，但请勿商用。
+                </p>
+            </div>
+        </>
+    )
+
+    return <div className='help-overlay' onclick={onClose}>
+        <div className='help-content' onclick={(e: Event) => e.stopPropagation()}>
+            <button className='help-close-btn' onclick={onClose}>×</button>
+            {content}
+            <div className='help-lang-switch'>
+                <span
+                    className={state.lang === 'zh' ? 'active' : ''}
+                    onclick={() => state.lang = 'zh'}
+                >中文</span>
+                <span className='separator'>|</span>
+                <span
+                    className={state.lang === 'en' ? 'active' : ''}
+                    onclick={() => state.lang = 'en'}
+                >English</span>
+            </div>
+        </div>
     </div>
 }
 
@@ -800,9 +937,11 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
             />}
             {state.leaveQuestion && <LeaveConfirmDialog
                 message={state.leaveQuestion}
-                onConfirm={() => navigate('/')}
+                onConfirm={() => navigate('/')
+                }
                 onCancel={() => state.leaveQuestion = undefined}
             />}
+            {state.showHelp && <HelpOverlay onClose={() => state.showHelp = false} />}
             {/* Top panel groups nobles/gems on the left and controls on the right */}
             <div className='top-panel'>
                 <div className='left-section'>
@@ -816,7 +955,7 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
                     </div>
                 </div>
                 <div className='right-section'>
-                    <GameInfo game={game} currPlayer={currPlayer} onLeave={onLeave} />
+                    <GameInfo game={game} currPlayer={currPlayer} state={state} onLeave={onLeave} />
                 </div>
             </div>
 

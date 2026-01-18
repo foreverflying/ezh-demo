@@ -1,23 +1,29 @@
 # ezh-demo
-Demos and examples for frontend frame "ezh".
 
-### Debug packages
-The npm packages `ezh` `ezh-model` `justrun-ws` projects are mapped into the src folder as git submodules, and act as packages by fake package.json files.
+Demos and examples for the `ezh` frontend framework.
 
-To debug them, replace the dependencies version with file links:
+## Debugging Local Packages
 
-```
+The packages `ezh`, `ezh-model`, `justrun-ws`, and `justrun-loader` are included as git submodules under `src/`, with stub `package.json` files to act as local packages.
+
+To debug them locally, update your dependencies to use file links:
+
+```json
 // package.json
 {
-  ...
   "dependencies": {
     "ezh": "file:./src/ezh",
     "ezh-model": "file:./src/ezh-model",
-    "justrun-ws": "file:./src/justrun-ws",
-    "path-parser": "^6.1.0"
+    "justrun-loader": "file:./src/justrun-loader",
+    "justrun-ws": "file:./src/justrun-ws"
   }
 }
 ```
 
-### Warning
-`ezh-model` depends on `ezh` as peerDependencies, to ensure there's only one ezh instance for the app, make sure never install an `ezh` package into `ezh-model` project. To verify, double check if there is an "ezh" folder in ezh-model/node_modules folder.
+### ⚠️ Important
+
+These packages have peer dependencies on each other:
+- `ezh-model` → `ezh`
+- `justrun-loader` → `ezh-model`, `justrun-ws`
+
+Ensure each package has only one global instance. Run `npm run clean` to remove any duplicate modules.

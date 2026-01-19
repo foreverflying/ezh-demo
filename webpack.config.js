@@ -4,6 +4,8 @@ const path = require('path')
 const dotenv = require('dotenv')
 const { ezhTransformer } = require('ezh-trans')
 const { DefinePlugin } = require('webpack')
+const TerserPlugin = require('terser-webpack-plugin')
+const { getAllClassName } = require('./getAllClassName.mjs')
 
 const envFile = process.env.NODE_ENV ? `${process.env.NODE_ENV}.env` : '.env'
 dotenv.config({ path: path.resolve(__dirname, 'env', envFile) })
@@ -16,6 +18,9 @@ const serverOptions = serverType === 'http' ? undefined : {
     cert: httpsCert.replace(/\\n/g, '\n'),
     key: httpsKey.replace(/\\n/g, '\n'),
 }
+
+const classNamesToKeep = getAllClassName('./src/splendor/models')
+console.log('Classes to keep:', classNamesToKeep)
 
 let mode = 'production'
 mode = 'development'
@@ -37,9 +42,9 @@ static = 'static/splendor'
 
 module.exports = {
     entry: `./src/${entry}`,
-    // experiments: {
-    //     outputModule: true,
-    // },
+    experiments: {
+        outputModule: true,
+    },
     mode: mode,
     // stats: {
     //     errorDetails: true,
@@ -51,11 +56,27 @@ module.exports = {
         chunkLoading: false,
         wasmLoading: false,
         path: path.resolve(__dirname, 'dist'),
-        // module: true,
+        module: true,
         publicPath: '/',
+    },
+    externalsType: 'module',
+    externals: {
+        'ezh': 'ezh',
+        'ezh-model': 'ezh-model',
+        'justrun-loader': 'justrun-loader',
+        'justrun-ws': 'justrun-ws',
     },
     optimization: {
         usedExports: true,
+        minimizer: [
+            new TerserPlugin({
+                terserOptions: {
+                    mangle: {
+                        reserved: classNamesToKeep,
+                    },
+                },
+            }),
+        ],
     },
     devtool: 'source-map',
     resolve: {
@@ -109,8 +130,8 @@ module.exports = {
         historyApiFallback: true,
         allowedHosts: 'all',
         devMiddleware: {
-            // writeToDisk: true,
-            writeToDisk: false,
+            writeToDisk: true,
+            // writeToDisk: false,
         },
         static: {
             directory: path.join(__dirname, static),

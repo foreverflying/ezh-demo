@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "scripts": {
     "start": "webpack serve",
+    "build": "webpack --mode production",
     "clean": "rm -rf ./src/ezh-model/ezh-model/node_modules/ezh && cd ./src/justrun-loader/justrun-loader/node_modules && rm -rf ezh ezh-model justrun-ws"
   },
   "author": "Andy Deng",
@@ -25,6 +26,7 @@
     "sass": "^1.86.0",
     "sass-loader": "^16.0.5",
     "style-loader": "^4.0.0",
+    "terser-webpack-plugin": "^5.3.16",
     "ts-loader": "^9.5.2",
     "typescript": "^5.9.3",
     "webpack": "^5.98.0",

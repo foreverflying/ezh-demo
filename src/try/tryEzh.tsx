@@ -3,6 +3,55 @@ import { $ezh, Com, EzElement, Link, Router, bindData, configGC, route, useState
 
 configGC(10, 1000)
 
+type Player = {
+    name: string
+    isSelected: boolean
+}
+
+const PlayerView: Com<{ player: Player, onRemove: (player: Player) => void }> = (
+    { player, onRemove },
+) => {
+    return <p>
+        <input type='checkbox' checked={bindData(player, 'isSelected')} />
+        Name: {player.name}
+        <input type='button' value='Remove' onclick={() => onRemove(player)} />
+    </p>
+}
+
+const MainView: Com = () => {
+    const state = useState({
+        name: '',
+        players: [] as Player[],
+    })
+    const { players } = state
+    const onAdd = () => {
+        if (state.name) {
+            const isSelected = (players.length + 1) % 2 === 0
+            players.push({ name: state.name, isSelected })
+            state.name = ''
+        }
+    }
+    const onRemove = (player: Player) => {
+        const idx = players.indexOf(player)
+        players.splice(idx, 1)
+    }
+    const selectedCount = players.reduce((count, player) => count + (player.isSelected ? 1 : 0), 0)
+    return <div>
+        <p>Player count: {players.length}, seleted count: {selectedCount}</p>
+        <p>
+            {players.map((player, i) => <PlayerView
+                key={i}
+                player={player}
+                onRemove={onRemove}
+            />)}
+        </p>
+        <p>
+            <input type='text' value={bindData(state, 'name')} />
+            <input type='button' value='Add' onclick={onAdd} />
+        </p>
+    </div>
+}
+
 const Test: Com<{ text: string, counter?: { count: number } }> = ({ text, counter }) => {
     return <p>{`${text}${counter ? ' - Counter is ' + counter.count : ''}`}</p>
 }
@@ -18,8 +67,14 @@ const Test0: Com<{ text: string, counter?: { count: number } }> = ({ text, count
 }
 
 const Test1: Com<{ text: string, counter?: { count: number } }> = ({ text, counter }) => {
+    const state = useState([
+        { id: 1, name: 'Andy' },
+        { id: 2, name: 'Bob' },
+        { id: 3, name: 'Cathy' },
+    ])
     return <p className={text.startsWith('Test-AAA') ? 'hello' : undefined}>
-        /=== {text}
+        /=== {text}, names are:
+        {state.map((item, i) => <p key={item.id} onclick={() => { state[i].name += `_${i}` }}> {item.name} </p>)}
         <Test text='Test' counter={counter} />
         <Test0 text='Test0' counter={counter} />
         \=== {text}
@@ -230,6 +285,7 @@ const TestPage2: Com<{ name: string, age: string }> = ({ name, age }) => {
 const routeMap = {
     testPage1: route(TestPage1, '/', true),
     testPage2: route(TestPage2, '/test2/:name/:age', true),
+    testPage3: route(MainView, '/main', true),
 }
 
 const rootElement = document.getElementById('root')
@@ -240,6 +296,8 @@ if (rootElement) {
                 <Link href='/'>test page 1</Link>
                 &nbsp;
                 <Link href='/test2/sam/18'>test page 2</Link>
+                &nbsp;
+                <Link href='/main'>main view</Link>
             </p>
             <Router routes={routeMap} />
         </div>

@@ -4,6 +4,8 @@ const path = require('path')
 const dotenv = require('dotenv')
 const { ezhTransformer } = require('ezh-trans')
 const { DefinePlugin } = require('webpack')
+const TerserPlugin = require('terser-webpack-plugin')
+const { getAllClassName } = require('./getAllClassName.mjs')
 
 const envFile = process.env.NODE_ENV ? `${process.env.NODE_ENV}.env` : '.env'
 dotenv.config({ path: path.resolve(__dirname, 'env', envFile) })
@@ -17,14 +19,17 @@ const serverOptions = serverType === 'http' ? undefined : {
     key: httpsKey.replace(/\\n/g, '\n'),
 }
 
+const classNamesToKeep = getAllClassName('./src/splendor/models')
+
 let mode = 'production'
 mode = 'development'
 
 let entry = 'try/benchmark.tsx'
 let static = 'static/benchmark'
+let externals = undefined
 
-// entry = 'try/tryEzh.tsx'
-// static = 'static/tryEzh'
+entry = 'try/tryEzh.tsx'
+static = 'static/tryEzh'
 
 // entry = 'try/tryEzhModel.tsx'
 // static = 'static/tryEzh'
@@ -35,11 +40,20 @@ let static = 'static/benchmark'
 entry = 'splendor/index.tsx'
 static = 'static/splendor'
 
+if (mode === 'production') {
+    externals = {
+        'ezh': 'ezh',
+        'ezh-model': 'ezh-model',
+        'justrun-loader': 'justrun-loader',
+        'justrun-ws': 'justrun-ws',
+    }
+}
+
 module.exports = {
     entry: `./src/${entry}`,
-    // experiments: {
-    //     outputModule: true,
-    // },
+    experiments: {
+        outputModule: true,
+    },
     mode: mode,
     // stats: {
     //     errorDetails: true,
@@ -51,11 +65,22 @@ module.exports = {
         chunkLoading: false,
         wasmLoading: false,
         path: path.resolve(__dirname, 'dist'),
-        // module: true,
+        module: true,
         publicPath: '/',
     },
+    externalsType: 'module',
+    externals: externals,
     optimization: {
         usedExports: true,
+        minimizer: [
+            new TerserPlugin({
+                terserOptions: {
+                    mangle: {
+                        reserved: classNamesToKeep,
+                    },
+                },
+            }),
+        ],
     },
     devtool: 'source-map',
     resolve: {

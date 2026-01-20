@@ -39,11 +39,7 @@ const MainView: Com = () => {
     return <div>
         <p>Player count: {players.length}, seleted count: {selectedCount}</p>
         <p>
-            {players.map((player, i) => <PlayerView
-                key={i}
-                player={player}
-                onRemove={onRemove}
-            />)}
+            {players.map((player, i) => <PlayerView key={i} player={player} onRemove={onRemove} />)}
         </p>
         <p>
             <input type='text' value={bindData(state, 'name')} />

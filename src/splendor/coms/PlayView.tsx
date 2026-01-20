@@ -6,7 +6,6 @@ import { Card } from '../models/Card'
 import { Noble } from '../models/Noble'
 import { Player } from '../models/Player'
 import { GemType, ActionType } from '../models/common'
-import { Action } from '../models/Player'
 import './PlayView.scss'
 
 type GameState = {
@@ -169,7 +168,7 @@ const GameInfo: Com<{ game: Game, currPlayer: Player, state: GameState, onLeave:
     </div>
 }
 
-const HelpOverlay: Com<{ onClose: () => void }> = ({ onClose }) => {
+const HelpOverlay: Com<{ gameState: GameState }> = ({ gameState }) => {
     const state = useState({ lang: 'en' as 'en' | 'zh' })
 
     const content = state.lang === 'en' ? (
@@ -211,7 +210,7 @@ const HelpOverlay: Com<{ onClose: () => void }> = ({ onClose }) => {
             </div>
             <div className='help-section'>
                 <h3>Non-Commercial Use Only</h3>
-                <p>This is a demo game showcasing <b>ezh</b>, a next-generation frontend framework alternative to React.</p>
+                <p>This is a demo game showcasing <b>Ezh</b>, a next-generation frontend framework alternative to React.</p>
                 <p>
                     The&nbsp;
                     <a
@@ -263,7 +262,7 @@ const HelpOverlay: Com<{ onClose: () => void }> = ({ onClose }) => {
             </div>
             <div className='help-section'>
                 <h3>请勿用于商业用途</h3>
-                <p>这是用来演示替代 React 的新一代前端框架 <b>ezh</b> 的示例游戏。</p>
+                <p>这是用来演示替代 React 的新一代前端框架 <b>Ezh</b> 的示例游戏。</p>
                 <p>
                     可免费获取
                     <a
@@ -279,6 +278,7 @@ const HelpOverlay: Com<{ onClose: () => void }> = ({ onClose }) => {
         </>
     )
 
+    const onClose = () => gameState.showHelp = undefined
     return <div className='help-overlay' onclick={onClose}>
         <div className='help-content' onclick={(e: Event) => e.stopPropagation()}>
             <button className='help-close-btn' onclick={onClose}>×</button>
@@ -941,7 +941,7 @@ export const PlayView: Com<{ game: Game, user: User }> = ({ game, user }) => {
                 }
                 onCancel={() => state.leaveQuestion = undefined}
             />}
-            {state.showHelp && <HelpOverlay onClose={() => state.showHelp = false} />}
+            {state.showHelp && <HelpOverlay gameState={state} />}
             {/* Top panel groups nobles/gems on the left and controls on the right */}
             <div className='top-panel'>
                 <div className='left-section'>

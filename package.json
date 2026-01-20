@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "scripts": {
     "start": "webpack serve",
-    "build": "webpack --mode production",
+    "build": "NODE_ENV=production webpack",
     "clean": "rm -rf ./src/ezh-model/ezh-model/node_modules/ezh && cd ./src/justrun-loader/justrun-loader/node_modules && rm -rf ezh ezh-model justrun-ws"
   },
   "author": "Andy Deng",
@@ -34,7 +34,7 @@
     "webpack-dev-server": "^5.2.0"
   },
   "dependencies": {
-    "ezh": "^0.4.1",
+    "ezh": "^0.4.3",
     "ezh-model": "^0.4.6",
     "justrun-loader": "^0.4.8",
     "justrun-ws": "^0.4.8"

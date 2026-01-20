@@ -5,7 +5,7 @@ const dotenv = require('dotenv')
 const { ezhTransformer } = require('ezh-trans')
 const { DefinePlugin } = require('webpack')
 const TerserPlugin = require('terser-webpack-plugin')
-const { getAllClassName } = require('./getAllClassName.mjs')
+const { collectClassNames } = require('./collectClassNames.mjs')
 
 const envFile = process.env.NODE_ENV ? `${process.env.NODE_ENV}.env` : '.env'
 dotenv.config({ path: path.resolve(__dirname, 'env', envFile) })
@@ -19,10 +19,9 @@ const serverOptions = serverType === 'http' ? undefined : {
     key: httpsKey.replace(/\\n/g, '\n'),
 }
 
-const classNamesToKeep = getAllClassName('./src/splendor/models')
+const classNames = collectClassNames('./src/splendor/models', true)
 
-let mode = 'production'
-mode = 'development'
+const mode = process.env.NODE_ENV ?? 'development'
 
 let entry = 'try/benchmark.tsx'
 let static = 'static/benchmark'
@@ -76,7 +75,7 @@ module.exports = {
             new TerserPlugin({
                 terserOptions: {
                     mangle: {
-                        reserved: classNamesToKeep,
+                        reserved: classNames,
                     },
                 },
             }),

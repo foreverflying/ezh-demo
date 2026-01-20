@@ -413,30 +413,20 @@ Hyperlink components that implement seamless page transitions in single-page app
 
 LinkProp and RouteLinkProp are defined as follows:
 ```ts
-export type LinkProp = {
-    href?: string
-    className?: string
-    style?: CSSStyleDeclaration
-    title?: string
-    target?: '_self' | '_blank' | '_parent' | '_top'
+export type LinkProp = PropsWithChildren<TagProps<'a'>> & {
     replace?: boolean
-    children?: ChildElement[] | ChildElement
 }
 
-export type RouteLinkProp<ParamT extends Record<string, string>> = {
+export type RouteLinkProp<ParamT extends Record<string, string>> = PropsWithChildren<Omit<TagProps<'a'>, 'href'>> & {
     route: IRoute<ParamT>
     params: ParamT
-    className?: string
-    style?: CSSStyleDeclaration
-    title?: string
-    target?: '_self' | '_blank' | '_parent' | '_top'
     replace?: boolean
-    children?: ChildElement[] | ChildElement
 }
 ```
 
 - `Link` usage is almost identical to traditional \<a\> hyperlinks.
 - `RouteLink` allows you to leverage a previously defined RouteMap to reverse-generate an href by providing parameters.
+- The `replace` parameter, when set to true, replaces the current entry in the navigation history, while false appends a new entry. This affects the back button behavior.
 
 ### Example
 ```tsx

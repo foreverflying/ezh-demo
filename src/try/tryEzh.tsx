@@ -1,7 +1,5 @@
 import 'ezh/debug-check'
-import { $ezh, Com, EzElement, Link, Router, bindData, configGC, route, useState } from 'ezh'
-
-configGC(10, 1000)
+import { $ezh, bindData, Com, configGC, EzElement, Link, route, Router, useState } from 'ezh'
 
 type Player = {
     name: string
@@ -286,6 +284,7 @@ const routeMap = {
 
 const rootElement = document.getElementById('root')
 if (rootElement) {
+    configGC(10, 1000)
     $ezh.render(rootElement, () => (
         <div>
             <p>

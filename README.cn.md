@@ -4,9 +4,17 @@
 
 `ezh` 前端框架的示例项目
 
+## Demos
+**[splendor](https://splendor.ezh.dev)**: 璀璨宝石，一个经典的2~4人玩的卡牌桌游，这是它的电子版。
+
+
 ## 关于 ezh
 
 **ezh** 是一个基于革命性渲染机制的新一代前端框架。它重新定义了现代网页应用的构建方式，让开发思路完全聚焦于业务逻辑和数据模型，而非渲染过程。
+
+### "ezh" 应该怎么读？
+
+ezh 的名字其实源于"Easy HTML"，也许应该被读作 "easy H"。不过，作者调皮地决定，指定它的官方发音同"edge"，希望通过它的传播，未来更多的英语使用者能了解到在汉语拼音里的`zh`是怎么发音的，然后我的名字就更有更多机会被读对了 ^_^
 
 ### 核心特性
 
@@ -77,6 +85,29 @@ $ezh.render(document.getElementById('root')!, MainView)
 ```
 
 ## 框架开发者注意事项
+
+### 环境搭建
+1. 在你的工作目录下：git clone https://github.com/foreverflying/dev-node.git
+2. 在相同的工作目录下：git clone https://github.com/foreverflying/ezh-demo.git
+3. 确保你的系统安装了 docker, vscode 以及 vscode 插件 Dev Containers
+4. 打开 vscode，点最左下角，然后选择 Open Folder in Container, 打开 ezh-demo 目录
+5. 初次打开时间比较长，会拉取 docker image, 构建 dev-node image，安装插件、初始化等等
+6. 运行 npm start，显示 compiled successfully 后，按 F5 可以启动 Chrome 调试了
+
+### 环境指引
+1. `webpack.config.js` 其中注释掉了几个不同的程序入口，benchmark, tryEzh 等等，你可以依次尝试使用每一个启动 npm start。同时也意味着，你可以在 src 中创建自己的项目目录，仿照它们的方式，将自己的程序入口以及 static 路径加入到 webpack.config.js 中，一键启动。
+
+2. `tsconfig.json` Ezh 的 tsx 语法支持，需要在 tsconfig 中做相应的配置，主要是这几个字段：
+    ```json
+    // tsconfig.json
+    {
+        "jsx": "react",
+        "jsxFactory": "$ezh.ezh",
+        "jsxFragmentFactory": "$ezh",
+    }
+    ```
+
+3. `ezh-trans` 在 webpack.config.js 中，你能看到使用 ts-loader 插件执行 `ezh-trans` 包的 `ezhTransformer` 的相关配置，这是 Ezh 可以完成它神奇工作的关键之一。同时这也解释了为什么 Ezh 不支持JS：它必须依赖 tsc 编译器提供的 transformer 接口，在编译过程中执行 `ezhTransformer` 修改语法树，才能产生 Ezh 运行时所需的代码。同时这也是目前这个最新的项目还在用最老的 webpack 作为构建工具的原因，因为基于 esbuild 的构建工具如 vite 不支持这一特性。
 
 ### 调试本地包
 

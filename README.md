@@ -4,9 +4,16 @@
 
 Demos project for the `ezh` frontend framework
 
+## Demos
+**[splendor](https://splendor.ezh.dev)**: A classic card-based board game for 2-4 players. This is its digital version.
+
 ## About ezh
 
 **ezh** is a next-generation frontend framework based on a revolutionary rendering mechanism. It redefines how modern web applications are built by letting development focus entirely on business logic and data models, rather than rendering processes.
+
+### How should "ezh" be pronounced?
+
+The name "ezh" actually comes from "Easy HTML", so perhaps it should be pronounced as "easy H". However, the author playfully decided that its official pronunciation is the same as "edge", hoping that through its spread, more English speakers in the future will learn how "zh" is pronounced in Chinese Pinyin, and then my name will have a better chance of being pronounced correctly ^_^
 
 ### Key Features
 
@@ -77,6 +84,29 @@ $ezh.render(document.getElementById('root')!, MainView)
 ```
 
 ## Notes for framework developers
+
+### Environment Setup
+1. In your working directory: git clone https://github.com/foreverflying/dev-node.git
+2. In the same working directory: git clone https://github.com/foreverflying/ezh-demo.git
+3. Make sure your system has Docker, VS Code, and the VS Code extension Dev Containers installed
+4. Open VS Code, click the bottom-left corner, then select "Open Folder in Container" and open the ezh-demo directory
+5. The first time you open it will take a while - it will pull the Docker image, build the dev-node image, install extensions, initialize, etc.
+6. Run `npm start`, and after it displays "compiled successfully", press F5 to start Chrome debugging
+
+### Environment Guide
+1. `webpack.config.js` contains several commented-out program entry points like benchmark, tryEzh, etc. You can try each one by uncommenting and running `npm start`. This also means you can create your own project directory in `src`, and following their pattern, add your own program entry and static path to webpack.config.js for one-click startup.
+
+2. `tsconfig.json` Ezh's tsx syntax support requires corresponding configuration in tsconfig, mainly these fields:
+    ```json
+    // tsconfig.json
+    {
+        "jsx": "react",
+        "jsxFactory": "$ezh.ezh",
+        "jsxFragmentFactory": "$ezh",
+    }
+    ```
+
+3. `ezh-trans` In webpack.config.js, you can see the configuration for using the ts-loader plugin to execute `ezhTransformer` from `ezh-trans` package. This is one of the keys to how Ezh accomplishes its magic. This also explains why Ezh doesn't support JS: it must rely on the transformer interface provided by the tsc compiler to execute `ezhTransformer` during compilation to modify the syntax tree, generating the code required by the Ezh runtime. This is also why this latest project still uses the oldest webpack as a build tool - build tools based on esbuild like Vite don't support this feature.
 
 ### Debugging Local Packages
 

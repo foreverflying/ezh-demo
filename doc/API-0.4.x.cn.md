@@ -412,34 +412,24 @@ const NotFoundView: Com = () => <p>404 Not Found</p>
 
 其中，LinkProp 与 RouteLinkProp 类型定义如下：
 ```ts
-export type LinkProp = {
-    href?: string
-    className?: string
-    style?: CSSStyleDeclaration
-    title?: string
-    target?: '_self' | '_blank' | '_parent' | '_top'
+export type LinkProp = PropsWithChildren<TagProps<'a'>> & {
     replace?: boolean
-    children?: ChildElement[] | ChildElement
 }
 
-export type RouteLinkProp<ParamT extends Record<string, string>> = {
+export type RouteLinkProp<ParamT extends Record<string, string>> = PropsWithChildren<Omit<TagProps<'a'>, 'href'>> & {
     route: IRoute<ParamT>
     params: ParamT
-    className?: string
-    style?: CSSStyleDeclaration
-    title?: string
-    target?: '_self' | '_blank' | '_parent' | '_top'
     replace?: boolean
-    children?: ChildElement[] | ChildElement
 }
 ```
 
 - `Link` 的用法几乎与传统的超链接\<a\>完全相同。
 - `RouteLink` 允许依托于之前已经定义的 RouteMap，通过提供参数通过 route 逆向生成 href。
+- 参数 `replace` 为 true 会替换导航的 history 记录，为 false 则会追加新记录。这将会影响后退的行为。
 
 ### 示例
 ```tsx
-<Link href="/menu">To Menu Page</Link>
+<Link href="/menu" replace={true}>To Menu Page</Link>
 <Link href="https://github.com" target="_blank">Open GitHub</Link>
 
 const routeMap: RouteMap = {
@@ -448,7 +438,7 @@ const routeMap: RouteMap = {
     login: route(LoginView, '/', true),
 }
 
-<RouteLink route={routeMap.login} >To Login Page</RouteLink>
+<RouteLink route={routeMap.login}>To Login Page</RouteLink>
 <RouteLink route={routeMap.game} params={{ gameId: 'my-game', foo: '1', bar: '2'}}>
     To Game Page
 </RouteLink>

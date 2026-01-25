@@ -16,12 +16,18 @@ let nextId = 1
 type Item = {
     id: number
     label: string
+    selected: boolean
 }
 
 type State = {
-    selected: number
     items: Item[]
+    selected?: Item
 }
+
+const state = useState<State>({
+    items: [],
+    selected: undefined,
+})
 
 const buildData = (count: number) => {
     const items: Item[] = []
@@ -29,21 +35,22 @@ const buildData = (count: number) => {
         items.push({
             id: nextId++,
             label: `${A[random(A.length)]} ${C[random(C.length)]} ${N[random(N.length)]}`,
+            selected: false,
         })
     }
     return items
 }
 
-const create = (state: State, count: number) => {
+const create = (count: number) => {
     state.items = buildData(count)
 }
 
-const append = (state: State, count: number) => {
+const append = (count: number) => {
     const items = buildData(count)
     state.items.push(...items)
 }
 
-const update = (state: State, interval: number) => {
+const update = (interval: number) => {
     const items = state.items
     const length = items.length
     for (let i = 0; i < length; i += interval) {
@@ -51,46 +58,52 @@ const update = (state: State, interval: number) => {
     }
 }
 
-const clear = (state: State) => {
+const clear = () => {
     state.items.length = 0
+    state.selected = undefined
 }
 
-const select = (state: State, item: Item) => {
-    state.selected = item.id
+const select = (item: Item) => {
+    if (state.selected) {
+        state.selected.selected = false
+    }
+    item.selected = true
+    state.selected = item
 }
 
-const remove = (state: State, item: Item) => {
+const remove = (item: Item) => {
     const index = state.items.indexOf(item)
     state.items.splice(index, 1)
+    if (state.selected === item) {
+        state.selected = undefined
+    }
 }
 
-const swap = (state: State, low: number, high: number) => {
+const swap = (low: number, high: number) => {
     const items = state.items
     if (items.length > high) {
         [items[low], items[high]] = [items[high], items[low]]
     }
 }
 
-const Row: Com<{ state: State, selected: boolean, item: Item }> = ({ state, selected, item }) =>
-    <tr className={selected ? 'danger' : ''}>
+const Row: Com<{ item: Item }> = ({ item }) =>
+    <tr className={item.selected ? 'danger' : ''}>
         <td className="col-md-1" textContent={'' + item.id} />
         <td className="col-md-4">
-            <a onclick={() => select(state, item)} textContent={item.label} />
+            <a onclick={() => select(item)} textContent={item.label} />
         </td>
         <td className="col-md-1">
-            <a onclick={() => remove(state, item)}>
+            <a onclick={() => remove(item)}>
                 <span className="glyphicon glyphicon-remove" ariaHidden="true" />
             </a>
         </td>
         <td className="col-md-6" />
     </tr>
 
-const Table: Com<{ state: State }> = ({ state }) => {
-    const selected = state.selected
+const Table: Com = () => {
     return <tbody>
-        {...state.items.map((item) => {
-            const id = item.id
-            return <Row key={id} state={state} selected={selected === id} item={item} />
+        {state.items.map((item) => {
+            return <Row key={item.id} item={item} />
         })}
     </tbody>
 }
@@ -100,7 +113,7 @@ const Button: Com<{ id: string, title: string, cb: () => void }> = ({ id, title,
         <button type="button" className="btn btn-primary btn-block" id={id} onclick={cb}>{title}</button>
     </div>
 
-const Jumbotron: Com<{ state: State }> = ({ state }) =>
+const Jumbotron: Com = () =>
     <div className="jumbotron">
         <div className="row">
             <div className="col-md-6">
@@ -108,26 +121,22 @@ const Jumbotron: Com<{ state: State }> = ({ state }) =>
             </div>
             <div className="col-md-6">
                 <div className="row">
-                    <Button id="run" title="Create 1,000 rows" cb={() => create(state, 1000)} />
-                    <Button id="runlots" title="Create 10,000 rows" cb={() => create(state, 10000)} />
-                    <Button id="add" title="Append 1,000 rows" cb={() => append(state, 1000)} />
-                    <Button id="update" title="Update every 10th row" cb={() => update(state, 10)} />
-                    <Button id="clear" title="Clear" cb={() => clear(state)} />
-                    <Button id="swaprows" title="Swap Rows" cb={() => swap(state, 1, 998)} />
+                    <Button id="run" title="Create 1,000 rows" cb={() => create(1000)} />
+                    <Button id="runlots" title="Create 10,000 rows" cb={() => create(10000)} />
+                    <Button id="add" title="Append 1,000 rows" cb={() => append(1000)} />
+                    <Button id="update" title="Update every 10th row" cb={() => update(10)} />
+                    <Button id="clear" title="Clear" cb={() => clear()} />
+                    <Button id="swaprows" title="Swap Rows" cb={() => swap(1, 998)} />
                 </div>
             </div>
         </div>
     </div>
 
 const Main: Com = () => {
-    const state = useState<State>({
-        selected: 0,
-        items: [],
-    })
     return <div className="container">
-        <Jumbotron state={state} />
+        <Jumbotron />
         <table className="table table-hover table-striped test-data">
-            <Table state={state} />
+            <Table />
         </table>
         <span className="preloadicon glyphicon glyphicon-remove" ariaHidden="true" />
     </div>

@@ -27,8 +27,8 @@ let entry = 'try/benchmark.tsx'
 let static = 'static/benchmark'
 let externals = undefined
 
-entry = 'try/tryEzh.tsx'
-static = 'static/tryEzh'
+// entry = 'try/tryEzh.tsx'
+// static = 'static/tryEzh'
 
 // entry = 'try/tryEzhModel.tsx'
 // static = 'static/tryEzh'
@@ -36,17 +36,17 @@ static = 'static/tryEzh'
 // entry = 'library/tryClusterClient.tsx'
 // static = 'static/library'
 
-entry = 'splendor/index.tsx'
-static = 'static/splendor'
+// entry = 'splendor/index.tsx'
+// static = 'static/splendor'
 
-if (mode === 'production') {
-    externals = {
-        'ezh': 'ezh',
-        'ezh-model': 'ezh-model',
-        'justrun-loader': 'justrun-loader',
-        'justrun-ws': 'justrun-ws',
-    }
-}
+// if (mode === 'production') {
+//     externals = {
+//         'ezh': 'ezh',
+//         'ezh-model': 'ezh-model',
+//         'justrun-loader': 'justrun-loader',
+//         'justrun-ws': 'justrun-ws',
+//     }
+// }
 
 module.exports = {
     entry: `./src/${entry}`,
@@ -66,6 +66,7 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         module: true,
         publicPath: '/',
+        filename: 'main.js',
     },
     externalsType: 'module',
     externals: externals,
